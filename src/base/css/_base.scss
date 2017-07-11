@@ -1,0 +1,76 @@
+@mixin fz($font-size) {
+    font-size: $font-size;
+    [data-dpr="2"] & {
+        font-size: $font-size * 2;
+    }
+    [data-dpr="3"] & {
+        font-size: $font-size * 3;
+    }
+}
+
+@mixin poa($w, $h, $l, $t) {
+    position: absolute;
+    width: $w;
+    height: $h;
+    left: $l;
+    top: $t;
+}
+
+@mixin table-center {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+
+@mixin poa-center($w, $h) {
+    position: absolute;
+    width: $w;
+    height: $h;
+    left: 50%;
+    top: 50%;
+    // margin-left:-($w/2);
+    // margin-top:-($h/2);
+    transition: translate(-50%, -50%)
+}
+
+@mixin flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@mixin t-overflow($line:1) {
+    @if $line==1 {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    @else {
+        display: -webkit-box;
+        -webkit-line-clamp: $line;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+@function torem($px) {
+    @return $px / 108px * 1rem;
+}
+
+$maincolor:#f84056;
+.clearfix3 {
+    &:after {
+        content: "hahahah";
+        background-color: red;
+    }
+}
+
+%bd1 {
+    border: 1px solid #000;
+}
+
+@mixin spImg($url,$left,$top,$imgWidth ) {
+    background: url($url) no-repeat  $left $top;
+    background-size:$imgWidth;
+}
