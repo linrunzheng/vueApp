@@ -59,18 +59,5 @@
 }
 
 $maincolor:#f84056;
-.clearfix3 {
-    &:after {
-        content: "hahahah";
-        background-color: red;
-    }
-}
 
-%bd1 {
-    border: 1px solid #000;
-}
 
-@mixin spImg($url,$left,$top,$imgWidth ) {
-    background: url($url) no-repeat  $left $top;
-    background-size:$imgWidth;
-}

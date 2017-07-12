@@ -30,6 +30,7 @@ export default {
         bottom:0;
         width: 100%;
         border-top: 0.014rem solid #ddd;
+        background: #fff;
         .bottom-nav{
             display: flex;
             .bottom-nav__li{

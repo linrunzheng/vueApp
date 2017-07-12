@@ -1,18 +1,15 @@
 <template>	    
     <div class="vippage-container">      
-        <div class="vip-detail">
-            <a href="<%=basePath%>bindphone/selectphone.do"><span></span></a> 
-            <i class="msg-points" onclick="message()"><a href="<%=basePath%>message/list.do" style="color:#fff"></a></i>
-            <div>
-                <div class="head-img">
-                    <img  src="" alt="">
-                </div>
-                <div>
-                    <p class="nick-name">昵称：<span>测试</span></p>
-                
-				 <p class="nick-phone">手机：<span>13546464646</span></p>
-                </div>
+        <div class="user-detail">        
+            <div class="user-detail__img">
+                <img  src="../assets/head.jpg" height="334" width="334" alt="">
             </div>
+            <div class="user-detail__message">
+                <p class="user-detail__message__name">昵称：<span>linrunzheng</span></p>
+            
+			     <p class="user-detail__message__phone">地址：<span>https://github.com/linrunzheng</span></p>
+            </div>
+            <span class="iconfont icon-set setting" @click="isShow=!isShow"></span>
         </div>
         <!-- 个人中心 -->
         <!-- 订单状态 -->
@@ -45,60 +42,57 @@
             </ul>
         </div>
       
-        <div class="vip-message-center">
- 
-            <div class="all-order vip-center">
+        <div class="operate">
+            <div class="operate__list all-order">
                 <a>
-                    <em></em>
-                    <i>全部订单</i>
-                    <strong></strong>
+                    <span class="iconfont icon-dingdan">全部订单</span>
+                    <strong class="iconfont icon-icon"></strong>
                 </a>
             </div>
 
-            <div class="my-coupon vip-center">
-                <a href="<%=basePath%>member/coupins/list.do">
-                    <em></em>
-                    <i>我的优惠券</i>
-                    <span>${coupinscount }</span>
-                    <strong></strong>
+            <div class="operate__list my-coupon">
+                <a >
+                    <span class="iconfont icon-youhuiquan">我的优惠券</span>
+                    <strong class="iconfont icon-icon"></strong>
                 </a>
             </div>
 
            
-            <div class="my-reward vip-center">
-                <a href="<%=basePath%>rewardsrecord/record.do">
-                    <em></em>
-                    <i>我的奖励</i>
-  
-                    <strong></strong>
+            <div class="operate__list my-reward">
+                <a>
+                    <span class="iconfont icon-jiangli">我的奖励</span> 
+                    <strong class="iconfont icon-icon"></strong>
+                </a>
+            </div>				
+           
+            <div class="operate__list shopping-help">
+                 <a>
+                    <span class="iconfont icon-bangzhu-copy">购物帮助</span>
+                    <strong class="iconfont icon-icon"></strong>
                 </a>
             </div>
 
-				
-            <div class="addr vip-center">
-                <a href="<%=basePath%>index/member/address/list.do">
-                    <em></em>
-                    <i>管理收货地址</i>
-                    <strong></strong>
+             <div class="operate__list concern-us">
+            	 <a>              
+                    <span class="iconfont icon-guanzhu">关注我们</span>
+                    <strong class="iconfont icon-icon"></strong>
                 </a>
-            </div>
-            <div class="help vip-center">
-                 <a href="<%=basePath%>wxindex/help/help.jsp">
-                    <em></em>
-                    <i>购物帮助</i>
-                    <strong></strong>
-                </a>
-            </div>
-             <div class="aboutus vip-center">
-            	 <a href="<%=basePath%>wxindex/help/contactUs.jsp">              
-                    <em></em>
-                    <i>关注我们</i>
-                    <strong></strong>
-                </a>
-            </div>
-            
+            </div>          
         </div>
 
+        <div class="slide-container" v-show="isShow" @click="isShow=!isShow">
+            <transition name="slide">
+                <div class="other-set" v-show="isShow">
+                    <img src="../assets/logo.png" alt="">
+                    <ul>
+                        <li class="iconfont icon-set">其他设置</li>
+                        <li class="iconfont icon-set">其他设置</li>
+                        <li class="iconfont icon-set">其他设置</li>
+                        <li class="iconfont icon-set">其他设置</li>
+                    </ul>
+                </div>
+            </transition>
+        </div>
     </div>
 </template>
 
@@ -106,68 +100,170 @@
 
 
 export default {
-   
+    data(){
+        return {
+            isShow:false
+        }
+    }
 }
 </script>
 
 <style scoped lang="scss">
-  
  @import '../base/css/base.scss'; 
-body{
-    background-color: #f3f8f1;
-}
+
 .vippage-container{
-    background-color: #fff;
-}
-.vip-detail {
+    .user-detail {
     position: relative;
     height: 5.0rem;
     width: 100%;
-    background-color: #c0c165;
-    -webkit-background-size: cover;
-    background-size: cover;
+    background:url(../assets/vue.jpg) no-repeat center/cover;
     color: #fff;
+    @include flex-center;
+    .setting{
+        position: absolute;
+        right:0.2rem;
+        top:0.2rem;
+        padding: 0.2344rem;
+        @include fz(20px);
+    }
+    .user-detail__img{
+        width:1.7625rem;
+        height: 1.7625rem;
+        margin:0 0.525rem;
+
+        img{
+           width: 100%; 
+           height: auto;
+           border-radius:50%;
+        }
+    }
+    .user-detail__message{
+        flex:1;
+        p{
+            padding:0.2rem 0;
+            @include fz(12px);
+        }
+    }
 }
 
-.bg{	
-	width:100%;
-	height:1.4rem;
-	bottom:0;
-	left:0;
-	position:absolute;
-	line-height:2rem;
-	text-align:right;
-	padding-right:0.2rem;
-	box-sizing:border-box;
-}
 
 .order-status-container{
-	ul{
-		display: flex;
-		padding: 0.208rem 0;
-		li{
-			flex:1;
-			justify-content:center;
-			align-items:center;
-			text-align: center;
-			div{
-				@include fz(20px);
-				margin-bottom: 0.139rem;
-				position: relative;
-				span{
-					position: absolute;
-					right:0.667rem;
-					top:-0.139rem;
-					width:0.378rem;
-					height: 0.378rem;
-					border-radius: 50%;	
-					background: red;
-					@include fz(10px);
-					color:#fff;
-				}
-			}
-		}
-	}
+    border-bottom: 0.0938rem solid #eee;
+    ul{
+        display: flex;
+        padding: 0.308rem 0 0.208rem 0;
+        li{
+            flex:1;
+            justify-content:center;
+            align-items:center;
+            text-align: center;
+            div{
+                @include fz(20px);
+                margin-bottom: 0.139rem;
+                position: relative;
+                span{
+                    position: absolute;
+                    right:0.667rem;
+                    top:-0.139rem;
+                    width:0.438rem;
+                    height: 0.438rem;
+                    line-height: 0.438rem;
+                    text-align: center;
+                    border-radius: 50%; 
+                    background: red;
+                    @include fz(9px);
+                    color:#fff;
+                }
+            }
+        }
+    }
+}
+
+.operate__list{
+    border-bottom: 0.0938rem solid #eee;
+    &.all-order span::before{
+        color:#e45f0f;
+    }
+    &.my-coupon span::before{
+        color:#e4c41e;
+    }
+    &.my-reward span::before{
+        color:#e61255;
+    }
+    &.shopping-help span::before{
+        color:#48c320;
+    }
+    &.concern-us span::before{
+        color:#207fc3;
+    }
+
+    a{
+        display:flex;
+        justify-content:space-between;  
+        padding:0.2644rem;     
+        span{
+            @include fz(14px);
+            color:#333;
+            &::before{
+                 @include fz(20px);
+                 margin:0 0.3rem 0 0.23rem;
+            }
+        }
+        strong{
+            @include fz(20px);
+            color:#939493;
+            
+        }
+        &:hover{
+            text-decoration: none;
+        }
+    }
+}
+
+    .slide-container{
+        position: absolute;
+        width:100%;
+        height: 100%;
+        background: rgba(0,0,0,.3);
+        top:0;
+        left:0;
+        z-index: 99999;
+        .other-set{
+            width:70%;
+            background: #fff;
+            height: 100%;
+            @include flex-center;
+            flex-direction:column;
+            img{
+                width: 3.125rem;
+                height: 3.125rem;
+                margin: 1.25rem 0 0.8rem;
+
+            }
+            ul{
+                flex:1;
+                width:100%;
+                background: #FFF;
+                border-top:0.0556rem solid #d2e0db;
+                li{
+                   @include fz(14px); 
+                   padding:0.4rem;
+                   &::before{
+                     @include fz(20px);
+                     margin-right: 0.25rem;
+                   }
+                }
+            }
+        }
+    }
+}
+
+.slide-enter-active{
+    transition:all 0.5s;
+}
+.slide-enter, .slide-leave-active{
+    transform:translateX(-100%);
+    transition:all 0.5s;
 }
 
 

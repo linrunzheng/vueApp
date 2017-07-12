@@ -7,6 +7,7 @@ import Vip from '@/components/vip.vue'
 import Login from '@/components/login.vue'
 import Main from '@/components/main.vue'
 
+
 Vue.use(Router)
 
 export default new Router({
@@ -31,11 +32,7 @@ export default new Router({
 		    	{
 		    		path:'/search',
 			        component:Search
-		    	},
-		    	{
-		    		path:'/car',
-			        component:Car
-		    	},
+		    	},		    
 		    	{
 		    		path:'/vip',
 			        component:Vip
@@ -45,7 +42,11 @@ export default new Router({
 		{
     		path:'/login',
 	        component:Login
-	    }
+	    },
+	    {
+    		path:'/car',
+	        component:Car
+    	}
 
 	]
 })
