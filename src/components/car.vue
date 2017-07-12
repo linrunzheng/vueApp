@@ -1,30 +1,28 @@
 <template>
    <div class="car-list-container">
 	    <ul>
-	    	<li class="car-list">
+	    	<li class="car-list" v-for="(v,i) in goodsList">
 	    		<div class="car-list__img">
-	    			<img src="../assets/logo.png">
+	    			<img :src="v.url">
 	    		</div>
 	    		<div class="car-list__detail">
-	    			<p class="car-list__detail__title">赢得红茶 红岩牌赢得红茶赢得红茶赢得红茶赢得红茶赢得红茶赢得红茶赢得红茶</p>
-	    			<p class="car-list__detail__number">数量：<button class="number--decrease iconfont icon-jianhao"></button><input type="text" readonly="" value="10"><button class="number--increase iconfont icon-iconfont7"></button></p>
-	    			<p class="car-list__detail__type">规格：<span>盒</span></p>
-	    			<p class="car-list__detail__price">单价：<span>￥230</span></p>
-	    			<p class="car-list__detail__sum">小计：<span>￥2300</span></p>
+	    			<p class="car-list__detail__title">{{v.title}}</p>
+	    			<p class="car-list__detail__number">数量：<button class="number--decrease iconfont icon-jianhao" @click="handleGoodsNumber(i,-1)"></button><input type="text" readonly="" v-model="v.number"><button class="number--increase iconfont icon-iconfont7" @click="handleGoodsNumber(i,1)"></button></p>
+	    			<p class="car-list__detail__type">规格：<span>{{v.stock}}</span></p>
+	    			<p class="car-list__detail__price">单价：<span>￥{{v.price}}</span></p>
+	    			<p class="car-list__detail__sum">小计：<span>￥{{v.price*v.number}}</span></p>
 	    		</div>
 	    		<div class="car-list__operate">
-	    			<span class="iconfont icon-shanchu delete-goods"></span>
+	    			<span class="iconfont icon-shanchu delete-goods" @click="deleteGoods(i)"></span>
 	    			<label >
-	    				<input type="checkbox" name="goods">
+	    				<input type="checkbox" name="goods" :checked="v.select==true" @change="toggleSelect(i)">
 	    				<span></span>
 	    			</label>
-	    		</div>
-	    		
-	    		
+	    		</div>	   	    		
 	    	</li>
 	    </ul>
 	    <div class="car-foot-nav">
-	    	<button class="sum-price">总额：￥1380.00</button>
+	    	<button class="sum-price">总额：￥{{sum}}</button>
 	    	<button class="continue-shopping">继续购物</button>
 	    	<button class="to-pay">去结算</button>
 	    </div>
@@ -32,11 +30,71 @@
 </template>
 
 <script>
-
-
 export default {
-   
-}
+    name: 'car',
+    data () {
+        return {
+            goodsList:[
+                {
+                    url:"http://localhost:8088/static/img/head.1f55be9.jpg",
+                    title:"测试时 啊啊啊啊1111",
+                    price:10,
+                    stock:"盒",
+                    number:33,
+                    select:true
+                },
+                {
+                    url:"http://localhost:8088/static/img/head.1f55be9.jpg",
+                    title:"测试时 啊啊啊啊2222",
+                    price:2000,
+                    stock:"盒",
+                    number:44,
+                    select:false
+                },
+                {
+                    url:"http://localhost:8088/static/img/head.1f55be9.jpg",
+                    title:"测试时 啊啊啊啊3333",
+                    price:77,
+                    stock:"盒",
+                    number:55,
+                    select:true
+                },
+                {
+                    url:"http://localhost:8088/static/img/head.1f55be9.jpg",
+                    title:"测试时 啊啊啊啊3333",
+                    price:10,
+                    stock:"盒",
+                    number:5,
+                    select:false
+                },
+
+            ]  
+        };
+    },
+    methods:{
+        handleGoodsNumber(i,val){
+            var number=this.goodsList[i].number;
+            this.goodsList[i].number=number+val<=0?1:number+val;
+        },
+        deleteGoods(i){
+            this.goodsList.splice(i,1);
+        },
+        toggleSelect(i){
+             this.goodsList[i].select=!this.goodsList[i].select; 
+        }
+    },
+    computed:{
+        sum(){
+            var total=0;
+            this.goodsList.forEach((item)=>{
+                if(item.select){
+                    total+=item.price*item.number
+                }             
+            })
+            return total
+        }
+    }
+};
 </script>
 
 <style scoped lang="scss">
@@ -58,7 +116,7 @@ export default {
    			flex:1;
    			padding:0 0.35rem;
    			p{
-   				@include fz(14px);
+   				@include fz(12px);
    				padding:0.0312rem 0;
    				color: #888;
    				@include t-overflow(2);

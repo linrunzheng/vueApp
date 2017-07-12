@@ -79,20 +79,20 @@
                 </a>
             </div>          
         </div>
-
-        <div class="slide-container" v-show="isShow" @click="isShow=!isShow">
+       
             <transition name="slide">
-                <div class="other-set" v-show="isShow">
-                    <img src="../assets/logo.png" alt="">
-                    <ul>
-                        <li class="iconfont icon-set">其他设置</li>
-                        <li class="iconfont icon-set">其他设置</li>
-                        <li class="iconfont icon-set">其他设置</li>
-                        <li class="iconfont icon-set">其他设置</li>
-                    </ul>
-                </div>
+                 <v-touch tag="div" v-on:swipeleft="hideSilde" class="other-set" v-show="isShow">                    
+                        <img src="../assets/logo.png" alt="">
+                        <ul>
+                            <li class="iconfont icon-set">其他设置</li>
+                            <li class="iconfont icon-set">其他设置</li>
+                            <li class="iconfont icon-set">其他设置</li>
+                            <li class="iconfont icon-set">其他设置</li>
+                        </ul>
+                 </v-touch>           
             </transition>
-        </div>
+            <div class="shadow" v-show="isShow" @click="isShow=!isShow"></div>
+
     </div>
 </template>
 
@@ -103,6 +103,11 @@ export default {
     data(){
         return {
             isShow:false
+        }
+    },
+    methods:{
+        hideSilde(){
+            this.isShow=!this.isShow
         }
     }
 }
@@ -218,54 +223,58 @@ export default {
             text-decoration: none;
         }
     }
+} 
+
+.shadow{
+    position: absolute;
+    width:100%;
+    height: 100%;
+    background: rgba(0,0,0,.3);
+    top:0;
+    left:0;
+    z-index: 9999;
 }
+.other-set{
+    position: absolute;
+    top:0;
+    left:0;
+    width:70%;
+    background: #fff;
+    height: 100%;
+    z-index: 99999;
+    @include flex-center;
+    flex-direction:column;
+    img{
+        width: 3.125rem;
+        height: 3.125rem;
+        margin: 1.25rem 0 0.8rem;
 
-    .slide-container{
-        position: absolute;
+    }
+    ul{
+        flex:1;
         width:100%;
-        height: 100%;
-        background: rgba(0,0,0,.3);
-        top:0;
-        left:0;
-        z-index: 99999;
-        .other-set{
-            width:70%;
-            background: #fff;
-            height: 100%;
-            @include flex-center;
-            flex-direction:column;
-            img{
-                width: 3.125rem;
-                height: 3.125rem;
-                margin: 1.25rem 0 0.8rem;
-
-            }
-            ul{
-                flex:1;
-                width:100%;
-                background: #FFF;
-                border-top:0.0556rem solid #d2e0db;
-                li{
-                   @include fz(14px); 
-                   padding:0.4rem;
-                   &::before{
-                     @include fz(20px);
-                     margin-right: 0.25rem;
-                   }
-                }
-            }
+        background: #FFF;
+        border-top:0.0556rem solid #d2e0db;
+        li{
+           @include fz(14px); 
+           padding:0.4rem;
+           &::before{
+             @include fz(20px);
+             margin-right: 0.25rem;
+           }
         }
     }
 }
 
-.slide-enter-active{
-    transition:all 0.5s;
-}
-.slide-enter, .slide-leave-active{
-    transform:translateX(-100%);
-    transition:all 0.5s;
-}
 
+    .slide-enter-active{
+        transition:all 0.4s;
+    }
+    .slide-enter, .slide-leave-active{
+        transform:translateX(-100%);
+        transition:all 0.4s;
+    }
+}
 
 
 

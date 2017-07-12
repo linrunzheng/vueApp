@@ -19,8 +19,7 @@ body{
 		background: #fff;
 		height:100%;
 		font-family: Microsoft YaHei;
-	}
-	
+	}	
 }
 
 
