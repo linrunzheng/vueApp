@@ -26,7 +26,7 @@ export default {
         color:#fd0909;
     }
     .foot-nav-containner{
-        position: absolute;
+        position: fixed;
         bottom:0;
         width: 100%;
         border-top: 0.014rem solid #ddd;
