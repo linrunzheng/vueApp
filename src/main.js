@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import base from './base/base.js'
+import base from './base/js/base.js'
 
 /*滑动事件*/
 import VueTouch from 'vue-touch'
@@ -20,8 +20,6 @@ Vue.use(VueLazyload, {
     attempt: 1
 })
 
-/*下拉滚动*/
-import BScroll from 'better-scroll'
 
 
 Vue.config.productionTip = false

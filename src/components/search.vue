@@ -1,6 +1,6 @@
 <template>
-   <div id="wrapper" ref="scroll" @scroll="alert(2)">
-       <div class="scroller" @scroll="alert(3)">
+   <div id="wrapper" ref="scrollWrap">
+       <div class="scroller" ref="scroller" :class="{topPadding,bottomPadding}">
       		<ul>
 	  			<li class="film-list" v-for="(v,i) in goodsList">
 		    		<div class="film-list__img">
@@ -23,6 +23,7 @@
 <script>
 
 import BScroll from 'better-scroll'
+import getStyle from '../base/js/util.js'
 export default {
    data(){
    		return{
@@ -31,7 +32,11 @@ export default {
    			showLoading:true,	
    			upload:false,		
    			download:false,		
-   			center:true,		
+   			center:true,	
+   			page:0,
+   			flag:true,
+   			topPadding:false,
+   			bottomPadding:false
    		}
    },
    methods:{
@@ -46,32 +51,80 @@ export default {
 	            
 	        })
 	        return name                         
+	    },
+	    getData(i,way){
+	    	this.flag=false;
+			this.showLoading=true;  
+			if(way=="upload"){
+				this.upload=true;
+			}else if(way=="download"){
+				this.download=true;
+			}
+	    	this.$ajax.get("https://api.douban.com/v2/movie/top250?start="+20*i)
+	   	    	.then((res)=>{ 	  
+	   	    		res=res.data;
+	   	    		this.reset();
+	   	    		this.page+=1;   
+	   	    		if(res.subjects[0]){
+	   	    			if(way=="upload"){
+	   	    				this.goodsList=res.subjects.concat(this.goodsList);
+		   	    		} else{
+		   	    			this.goodsList=this.goodsList.concat(res.subjects);
+		   	    		}
+		   	    		this.$nextTick(()=>{
+		   	    			this.scroller.refresh(); 
+		   	    		}) 	
+	   	    		}else{
+	   	    			this.flag=false;
+	   	    			this.scroller.refresh(); 
+	   	    			alert("到底了")
+	   	    		}	   	    				   	    			   	    			    		
+	   	    	})
+	   	    	.catch((error)=>{
+	   	    		alert(error)
+	   	    	})
+	    },
+	    reset(){
+	    	this.showLoading=false;  
+    		this.center=false; 
+    		this.upload=false; 
+    		this.download=false;
+    		this.topPadding=false;
+    		this.bottomPadding=false;
+    		this.flag=true;     
 	    }
    },
     mounted(){
-    	this.scroller = new BScroll(this.$refs.scroll,{
+    	var self=this;
+    	self.scroller = new BScroll(self.$refs.scrollWrap,{
     		click:true,
-    		probeType:1
+    		probeType:3
     	});
-    	this.scroller.on("scroll",function(a){
-    		console.log(a)
-    	})
-    	
-   	    this.$ajax.get("https://api.douban.com/v2/movie/in_theaters")
-   	    	.then((res)=>{ 	    		
-   	    		this.goodsList=res.data.subjects;   
-   	    		this.showLoading=false;  
-   	    		this.center=false;          
-   	    	})
-   	    	.catch((error)=>{
-   	    		alert(error)
-   	    	})
+    	self.getData(self.page);
+
+    	self.scroller.on("scroll",function(pos){
+
+    		if(self.flag==true){
+    			var el=self.$refs.scroller;
+	    		var wrap=self.$refs.scrollWrap;
+	    		var height=getStyle(el,"height");
+	    		var pageHeight=getStyle(wrap,"height");
+	   	
+				if(pos.y>50){
+					self.getData(self.page,"upload");
+				}else if(pos.y-pageHeight<-height-50){
+					self.getData(self.page,"download");
+				}
+
+    		}
+    		
+    	})    	  	    
    },
    watch:{
    	   goodsList(){
-   	   	    setTimeout(()=>{
+   	   	    /*setTimeout(()=>{
    	   		    this.scroller.refresh();   	   	
-   	   	    },500)	   		
+   	   	    },50)	*/   		
    	   }
    }
 }
@@ -87,18 +140,34 @@ export default {
     	overflow: hidden;
 		.scroller{
 			position: absolute;
-			width: 100%;			
+			width: 100%;
+			&.topPadding{
+				top:1rem;
+			}	
+			&.bottomPadding{
+				bottom:2rem;
+			}		
 		}
 		#loading{
 			text-align: center;
-			&.center{
-				position: absolute;
+			position: absolute;
+			z-index: 100;
+			width: 100%;
+			&.center{			
 				top:50%;
 				left:50%;
 				transform:translate(-50%,-50%);
 			}
+			&.upload{
+				top:0;
+			}
+			&.download{
+				bottom:0;
+			}
 			img{
 				margin: 0 auto;
+				width: 0.889rem;
+				height: 0.889rem;
 			}
 		}
 		.film-list{
@@ -110,7 +179,7 @@ export default {
 	   			width:1.7rem;
 		   		height: 2.7rem;
 		   		img{
-					max-width: 100%;
+					width: 100%;
 					height:auto;
 		   		}
 	   		}
