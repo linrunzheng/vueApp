@@ -6,11 +6,17 @@ import Search from '@/components/search.vue'
 import Vip from '@/components/vip.vue'
 import Login from '@/components/login.vue'
 import Main from '@/components/main.vue'
+import vipMessage from '@/components/vip-message.vue'
+import vipSetting from '@/components/vip-setting.vue'
 
 
 Vue.use(Router)
 
 export default new Router({
+	mode:"history",
+	scrollBehavior (to, from, savedPosition) {
+	  return { x: -1000, y: -1000 }
+	},
     routes: [	
     	{
     		path:'/',
@@ -35,7 +41,22 @@ export default new Router({
 		    	},		    
 		    	{
 		    		path:'/vip',
-			        component:Vip
+			        component:Vip,
+			        children:[
+			        	{
+				    		path:'',
+					        redirect:"message"
+				    	},
+			        	{
+				    		path:'message',
+					        component:vipMessage,
+				    	},
+
+				    	{
+				    		path:'set',
+					        component:vipSetting,
+				    	},
+			        ]
 		    	}
 	        ]
     	},

@@ -1,7 +1,7 @@
 <template>
-  <div id="app">
-    <router-view></router-view>
-  </div>
+    <div id="app">
+        <router-view></router-view>
+    </div>
 </template>
 
 <script>
@@ -12,7 +12,7 @@
 <style lang="scss">
 
 @import './base/css/normalize.scss';
-@import url('//at.alicdn.com/t/font_flvfw3a3b0nklnmi.css');
+@import url('//at.alicdn.com/t/font_ft12tucf00lcv7vi.css');
 body{
 	background: #f1f8f7;
 	#app{

@@ -184,6 +184,7 @@ export default {
 	   		}
    		}		
    }
+   
    .car-foot-nav{
    	    position: fixed;
    	    bottom:0;

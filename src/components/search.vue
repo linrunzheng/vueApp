@@ -110,9 +110,9 @@ export default {
 	    		var height=getStyle(el,"height");
 	    		var pageHeight=getStyle(wrap,"height");
 	   	
-				if(pos.y>50){
+				if(pos.y>80){
 					self.getData(self.page,"upload");
-				}else if(pos.y-pageHeight<-height-50){
+				}else if(pos.y-pageHeight<-height-80){
 					self.getData(self.page,"download");
 				}
 
