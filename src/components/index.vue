@@ -1,51 +1,73 @@
 <template>
-    <div>
-        <swiper :options="swiperOption" class="swiper-box">
-            <swiper-slide class="swiper-item"></swiper-slide>
-            <swiper-slide class="swiper-item"></swiper-slide>
-            <swiper-slide class="swiper-item"></swiper-slide>
-            <swiper-slide class="swiper-item"></swiper-slide>
-          <div class="swiper-pagination" slot="pagination"></div>
-        </swiper>
-
+    <div>      
+        <swiperComponent :swiperOption="swiperOption"></swiperComponent>
         <div class="film">
             <h3 class="film__type">
                 <span>TOP250</span>
-                <span class="more"><em>更多</em><em class="iconfont icon-more"></em></span>
-                
+                <span class="more"><em>更多</em><em class="iconfont icon-more"></em></span>               
             </h3>
-            <div class="film__list" ref="scroll">
-                <ul class="clearfix" ref="scroll-list">
+            <div class="film__list" ref="scroll-top250" data-request="top250" data-array="topList">
+                <ul class="clearfix">
                     <li v-for="(v,i) in topList">
-                        <div class="film__list__img"><img src="../assets/head.jpg" alt=""></div>
+                        <div class="film__list__img"><img :src="v.images.small" alt=""></div>
                         <div class="film__list__detail">
                             <h4 class="film__list__title">{{v.title}}</h4>
-                            <p class="film__list__rank">{{v.rating.average}}</p>
+                            <p class="film__list__rank">评分：{{v.rating.average}}</p>
+                            <p class="film__list__rank">
+                                <span :class="{rankColor:v.rating.average>((i-0.5)*2)}" class="iconfont icon-rank" v-for="i in 5"></span>
+                            </p>
                         </div>
                     </li>
-
                 </ul>
             </div>
         </div>
 
-         <!-- <div class="film">
+        <div class="film">
             <h3 class="film__type">
-                <span>TOP250</span>
-                <span class="more"><em>更多</em><em class="iconfont icon-more"></em></span>
+                <span>即将上映</span>
+                <span class="more"><em>更多</em><em class="iconfont icon-more"></em></span>               
             </h3>
-            <div class="film__list" ref="scroll">
-                <ul class="clearfix" ref="scroll-list">
-                    <li v-for="(v,i) in topList">
-                        <div class="film__list__img"><img src="../assets/head.jpg" alt=""></div>
+            <div class="film__list" ref="scroll-comming" data-request="coming_soon" data-array="commingList">
+                <ul class="clearfix">
+                    <li v-for="(v,i) in commingList">
+                        <div class="film__list__img"><img :src="v.images.small" alt=""></div>
                         <div class="film__list__detail">
-                            <h4 class="film__list__title">{{v.name}}</h4>
-                            <p class="film__list__rank">{{v.rank}}</p>
+                            <h4 class="film__list__title">{{v.title}}</h4>
+                            <p class="film__list__rank">评分：{{v.rating.average}}</p>
+                            <p class="film__list__rank">
+                                <span :class="{rankColor:v.rating.average>((i-0.5)*2)}" class="iconfont icon-rank" v-for="i in 5"></span>
+                            </p>
                         </div>
                     </li>
-         
                 </ul>
             </div>
-                 </div> -->
+        </div>
+
+        <div class="film">
+            <h3 class="film__type">
+                <span>正在上映</span>
+                <span class="more"><em>更多</em><em class="iconfont icon-more"></em></span>               
+            </h3>
+            <div class="film__list" ref="scroll-theater" data-request="in_theaters" data-array="theaterList">
+                <ul class="clearfix">
+                    <li v-for="(v,i) in theaterList">
+                        <div class="film__list__img"><img :src="v.images.small" alt=""></div>
+                        <div class="film__list__detail">
+                            <h4 class="film__list__title">{{v.title}}</h4>
+                            <p class="film__list__rank">评分：{{v.rating.average}}</p>
+                            <p class="film__list__rank">
+                                <span :class="{rankColor:v.rating.average>((i-0.5)*2)}" class="iconfont icon-rank" v-for="i in 5"></span>
+                            </p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+
+
+      
+          
 
     </div>
 </template>
@@ -53,45 +75,55 @@
 <script>
 import BScroll from 'better-scroll'
 import getStyle from '../base/js/util.js'
+import swiperComponent from './swiper.vue'
 export default {
     data() {
         return {
-            scroller:null,
             swiperOption: {
                 pagination: '.swiper-pagination',
                 direction: 'horizontal',          
             },
-            topList:[
-                
-            ]
+            scroller:[],        
+            topList:[],
+            theaterList:[],
+            commingList:[]
         }
     },
+    components:{
+        swiperComponent
+    },
     mounted(){
-        this.scroller = new BScroll(this.$refs.scroll,{
-            click:true,
-            probeType:3,
-            scrollX:true,
-            scrollY:false
-        });
+        const api="https://api.douban.com/v2/movie/";
+/*        this.$ajax.get(`${api}in_theaters`);*/
+        Object.keys(this.$refs).forEach((item,index)=>{
+            if(item.match("scroll")){
+                this.scroller[index]=this.initScroll(this.$refs[item]);
+                const {request,array}=this.$refs[item].dataset;
 
-        this.$ajax.get("https://api.douban.com/v2/movie/top250")
-            .then((res)=>{
-                this.topList=res.data.subjects;
-                this.$nextTick(()=>{
-                     this.scroller.refresh()
-                })             
-            })
-
-
+                this.$ajax.get(`${api}${request}?start=${Math.floor(Math.random()*10)}`)
+                .then((res)=>{
+                    this[array]=res.data.subjects;
+                    this.$nextTick(()=>{
+                         this.freshWidth(this.$refs[item].children[0]); 
+                         this.scroller[index].refresh();                   
+                    })             
+                })   
+            }
+        })
     },
     methods:{
-        freshWidth(){
-            /*var list=this.$refs["scroll-list"].children;
-            var l=list.number;
-            var width=getStyle(list[0],"width");
-            console.log(width)*/
-
-            
+        freshWidth(el){
+            var width=getStyle(el.children[0],"width");
+            var padding=getStyle(el.children[0],"padding-right");
+            el.style.width=el.children.length*(width+padding)+"px";              
+        },
+        initScroll(el){
+            return new BScroll(el,{
+                click:true,
+                probeType:3,
+                scrollX:true,
+                scrollY:false
+            })
         }
     }
 
@@ -100,27 +132,7 @@ export default {
 
 <style lang="scss">
 @import '../base/css/base.scss';
-.swiper-box {
-    width: 100%;
-    height: 100%;
-    margin: 0 auto;
-    .swiper-item {
-        height: 5rem;
-        background: url() no-repeat center/cover;
-        &:nth-of-type(1){
-            background-image:url(../assets/vue.jpg);
-        }
-        &:nth-of-type(2){
-            background-image:url(../assets/swiper1.jpg);
-        }
-        &:nth-of-type(3){
-            background-image:url(../assets/swiper2.jpg);
-        }
-        &:nth-of-type(4){
-            background-image:url(../assets/swiper3.jpg);
-        }  
-    }
-}
+
 
 .film{
     .film__type{
@@ -146,17 +158,20 @@ export default {
     }
     .film__list{
         width:100%;
-        height:4rem;
+        height:4.6rem;
         overflow: hidden;
+        padding: 0.208rem;
         ul{
-            padding: 0.208rem;
+            width: 300%;
+            height: 100%;
         }
         li{
             float: left;
             padding-right: 0.208rem;
-            margin-bottom: 0.2rem;
+            margin-bottom: 0.7rem;
+            width:2.2rem;
             .film__list__img{
-                width: 2.2rem;
+                width:2.2rem;
                 height: 3rem;
                 img{
                     width: 100%;
@@ -164,9 +179,22 @@ export default {
                 }
             }
             .film__list__detail{
+                *{
+                   @include t-overflow; 
+                }
                 .film__list__title{
                     font-weight: bold;
-
+                    color: #3e4637;
+                }
+                .film__list__rank{
+                     @include fz(12px);
+                    .iconfont{
+                        @include fz(12px);
+                        color: #999;
+                        &.rankColor{
+                            color:orange;
+                        }
+                    }
                 }
             }
         }

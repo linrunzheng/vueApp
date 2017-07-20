@@ -1,6 +1,6 @@
 <template>
    <div>
-	    <router-view></router-view>	 
+	    <router-view id="container"></router-view>	 
 		<foot-nav></foot-nav>
    </div>
 </template>
@@ -17,5 +17,7 @@ export default {
 </script>
 
 <style scoped lang="scss">
-   
+   #container{
+   	padding-bottom: 1.111rem;
+   }
 </style>

@@ -12,7 +12,7 @@
 <style lang="scss">
 
 @import './base/css/normalize.scss';
-@import url('//at.alicdn.com/t/font_ft12tucf00lcv7vi.css');
+@import url('//at.alicdn.com/t/font_nfzwlroyg2vuz0k9.css');
 body{
 	background: #f1f8f7;
 	#app{
