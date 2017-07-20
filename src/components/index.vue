@@ -7,6 +7,7 @@
             <swiper-slide class="swiper-item"></swiper-slide>
           <div class="swiper-pagination" slot="pagination"></div>
         </swiper>
+
         <div class="film">
             <h3 class="film__type">
                 <span>TOP250</span>
@@ -18,14 +19,34 @@
                     <li v-for="(v,i) in topList">
                         <div class="film__list__img"><img src="../assets/head.jpg" alt=""></div>
                         <div class="film__list__detail">
-                            <h4 class="film__list__title">{{v.name}}</h4>
-                            <p class="film__list__rank">{{v.rank}}</p>
+                            <h4 class="film__list__title">{{v.title}}</h4>
+                            <p class="film__list__rank">{{v.rating.average}}</p>
                         </div>
                     </li>
 
                 </ul>
             </div>
         </div>
+
+         <!-- <div class="film">
+            <h3 class="film__type">
+                <span>TOP250</span>
+                <span class="more"><em>更多</em><em class="iconfont icon-more"></em></span>
+            </h3>
+            <div class="film__list" ref="scroll">
+                <ul class="clearfix" ref="scroll-list">
+                    <li v-for="(v,i) in topList">
+                        <div class="film__list__img"><img src="../assets/head.jpg" alt=""></div>
+                        <div class="film__list__detail">
+                            <h4 class="film__list__title">{{v.name}}</h4>
+                            <p class="film__list__rank">{{v.rank}}</p>
+                        </div>
+                    </li>
+         
+                </ul>
+            </div>
+                 </div> -->
+
     </div>
 </template>
 
@@ -41,12 +62,7 @@ export default {
                 direction: 'horizontal',          
             },
             topList:[
-                {name:"12313",rank:4.5},
-                {name:"12313",rank:4.5},
-                {name:"12313",rank:4.5},
-                {name:"12313",rank:4.5},
-                {name:"12313",rank:4.5},
-                {name:"12313",rank:4.5},
+                
             ]
         }
     },
@@ -57,14 +73,23 @@ export default {
             scrollX:true,
             scrollY:false
         });
-        this.freshWidth()
+
+        this.$ajax.get("https://api.douban.com/v2/movie/top250")
+            .then((res)=>{
+                this.topList=res.data.subjects;
+                this.$nextTick(()=>{
+                     this.scroller.refresh()
+                })             
+            })
+
+
     },
     methods:{
         freshWidth(){
-            var list=this.$refs["scroll-list"].children;
+            /*var list=this.$refs["scroll-list"].children;
             var l=list.number;
             var width=getStyle(list[0],"width");
-            console.log(width)
+            console.log(width)*/
 
             
         }
@@ -121,14 +146,15 @@ export default {
     }
     .film__list{
         width:100%;
+        height:4rem;
         overflow: hidden;
         ul{
             padding: 0.208rem;
-            width: 200%;
         }
         li{
             float: left;
             padding-right: 0.208rem;
+            margin-bottom: 0.2rem;
             .film__list__img{
                 width: 2.2rem;
                 height: 3rem;
