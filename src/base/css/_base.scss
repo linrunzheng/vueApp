@@ -7,6 +7,12 @@
         font-size: $font-size * 3;
     }
 }
+@mixin dpr-img($url,$name,$type:".jpg"){
+    background-image: url($url+"2x/"+ $name+"@2x"+$type);
+    [data-dpr="3"] &{
+       background-image: url($url+"3x/"+ $name+"@3x"+$type);
+    }
+}
 
 @mixin poa($w, $h, $l, $t) {
     position: absolute;

@@ -8,6 +8,7 @@ import Login from '@/components/login.vue'
 import Main from '@/components/main.vue'
 import vipMessage from '@/components/vip-message.vue'
 import vipSetting from '@/components/vip-setting.vue'
+import Detail from '@/components/detail.vue'
 
 
 Vue.use(Router)
@@ -15,12 +16,16 @@ Vue.use(Router)
 export default new Router({
 	mode:"history",
 	scrollBehavior (to, from, savedPosition) {
-	  return { x: -1000, y: -1000 }
+	  return { x: 0, y: 0 }
 	},
     routes: [	
     	{
     		path:'/',
 	         redirect:"/home"
+	    },
+	    {
+    		path:'/detail/:type',
+			component:Detail,
 	    },
     	{
     		path:'/home',

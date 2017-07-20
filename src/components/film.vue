@@ -1,12 +1,13 @@
 <template>
 	 <div class="film">
         <h3 class="film__type">
-            <span>正在上映</span>
-            <span class="more"><em>更多</em><em class="iconfont icon-more"></em></span>               
+            <span>{{type}}</span>
+            <router-link :to='{path:"/detail",params:{type}}'><span class="more"><em>更多</em><em class="iconfont icon-more"></em></span></router-link>
+                          
         </h3>
-        <div class="film__list" ref="scroll-theater" data-request="in_theaters" data-array="theaterList">
+        <div class="film__list" :ref="el" :data-request="url">
             <ul class="clearfix">
-                <li v-for="(v,i) in theaterList">
+                <li v-for="(v,i) in array">
                     <div class="film__list__img"><img :src="v.images.small" alt=""></div>
                     <div class="film__list__detail">
                         <h4 class="film__list__title">{{v.title}}</h4>
@@ -22,15 +23,118 @@
 </template>
 
 <script>
+import BScroll from 'better-scroll'
+import getStyle from '../base/js/util.js'
 export default {
     data () {
 	    return {
-
+	    	scroller:null,
+	    	array:[]
 	    };
+    },
+    props:["el","url","type"],
+    mounted(){
+    	const api="https://api.douban.com/v2/movie/";
+    	const el = this.$refs[this.el];
+    	this.scroller=this.initScroll(el);
+        const {request,array}=el.dataset;
+
+        this.$ajax.get(`${api}${request}?start=${Math.floor(Math.random()*10)}`)
+	        .then((res)=>{
+	            this.array=res.data.subjects;
+	            this.$nextTick(()=>{
+	                 this.freshWidth(el.children[0]); 
+	                 this.scroller.refresh();                   
+	            })             
+	        })   
+    },
+    methods:{
+    	initScroll(el){
+            return new BScroll(el,{
+                click:true,
+                probeType:3,
+                scrollX:true,
+                scrollY:false
+            })
+        },
+        freshWidth(el){
+            var width=getStyle(el.children[0],"width");
+            var padding=getStyle(el.children[0],"padding-right");
+            el.style.width=el.children.length*(width+padding+2)+"px";              
+        },
     }
 };
 </script>
 
 <style lang="scss" scoped>
+@import '../base/css/base.scss';
+.film{
+    .film__type{
+        font-weight: bold;
+        @include fz(13px);
+        padding:0.208rem;
+        color: #666;
+        display: flex;
+        justify-content:space-between;
+        align-items:center;
+        span{
+
+        }
+        .more{
+            color:#77b59c;
+            em{
+                vertical-align: middle;
+            }
+            .iconfont{
+                @include fz(13px);
+            }
+        }
+    }
+    .film__list{
+        width:100%;
+        height:4.6rem;
+        overflow: hidden;
+        padding: 0.208rem;
+        box-sizing:border-box;
+        ul{
+            width: 300%;
+            height: 100%;
+        }
+        li{
+            float: left;
+            padding-right: 0.208rem;
+            margin-bottom: 0.7rem;
+            width:2.2rem;
+            .film__list__img{
+                width:2.2rem;
+                height: 3rem;
+                img{
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+            .film__list__detail{
+            	margin-top: 0.042rem;
+                *{
+                   @include t-overflow; 
+                }
+                .film__list__title{
+                    font-weight: bold;
+                    color: #3e4637;
+                }
+                .film__list__rank{
+                     @include fz(12px);
+                    .iconfont{
+                        @include fz(12px);
+                        color: #999;
+                        &.rankColor{
+                            color:orange;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 
 </style>
