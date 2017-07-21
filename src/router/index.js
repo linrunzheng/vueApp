@@ -8,7 +8,7 @@ import Login from '@/components/login.vue'
 import Main from '@/components/main.vue'
 import vipMessage from '@/components/vip-message.vue'
 import vipSetting from '@/components/vip-setting.vue'
-import Detail from '@/components/detail.vue'
+import Classify from '@/components/classify.vue'
 
 
 Vue.use(Router)
@@ -24,8 +24,8 @@ export default new Router({
 	         redirect:"/home"
 	    },
 	    {
-    		path:'/detail/:type',
-			component:Detail,
+    		path:'/classify/:type',
+			component:Classify,
 	    },
     	{
     		path:'/home',

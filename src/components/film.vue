@@ -2,13 +2,13 @@
 	 <div class="film">
         <h3 class="film__type">
             <span>{{type}}</span>
-            <router-link :to='{path:"/detail",params:{type}}'><span class="more"><em>更多</em><em class="iconfont icon-more"></em></span></router-link>
+            <router-link :to='{path:"/classify/"+type,}'><span class="more"><em>更多</em><em class="iconfont icon-more"></em></span></router-link>
                           
         </h3>
-        <div class="film__list" :ref="el" :data-request="url">
+        <div class="film__list" :ref="el" :data-request="url">         
             <ul class="clearfix">
                 <li v-for="(v,i) in array">
-                    <div class="film__list__img"><img :src="v.images.small" alt=""></div>
+                    <div class="film__list__img"><img v-lazy="v.images.small" alt=""></div>
                     <div class="film__list__detail">
                         <h4 class="film__list__title">{{v.title}}</h4>
                         <p class="film__list__rank">评分：{{v.rating.average}}</p>
@@ -18,6 +18,7 @@
                     </div>
                 </li>
             </ul>
+             <Loading v-show="!array[0]" class="loading-center"></Loading>
         </div>
     </div>
 </template>
@@ -25,6 +26,8 @@
 <script>
 import BScroll from 'better-scroll'
 import getStyle from '../base/js/util.js'
+import Loading from './loading.vue'
+import api from "../base/js/api.js"
 export default {
     data () {
 	    return {
@@ -32,9 +35,11 @@ export default {
 	    	array:[]
 	    };
     },
+    components:{
+        Loading
+    },
     props:["el","url","type"],
     mounted(){
-    	const api="https://api.douban.com/v2/movie/";
     	const el = this.$refs[this.el];
     	this.scroller=this.initScroll(el);
         const {request,array}=el.dataset;
@@ -96,6 +101,7 @@ export default {
         overflow: hidden;
         padding: 0.208rem;
         box-sizing:border-box;
+        position: relative;
         ul{
             width: 300%;
             height: 100%;
@@ -135,6 +141,13 @@ export default {
             }
         }
     }
+}
+
+.loading-center{
+    position: absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
 }
 
 </style>
