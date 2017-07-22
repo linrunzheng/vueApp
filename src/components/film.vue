@@ -2,7 +2,7 @@
 	 <div class="film">
         <h3 class="film__type">
             <span>{{type}}</span>
-            <router-link :to='{path:"/classify/"+type,}'><span class="more"><em>更多</em><em class="iconfont icon-more"></em></span></router-link>
+            <router-link :to='{path:"/classify/"+url}'><span class="more"><em>更多</em><em class="iconfont icon-more"></em></span></router-link>
                           
         </h3>
         <div class="film__list" :ref="el" :data-request="url">         
@@ -42,7 +42,7 @@ export default {
     mounted(){
     	const el = this.$refs[this.el];
     	this.scroller=this.initScroll(el);
-        const {request,array}=el.dataset;
+        const {request}=el.dataset;
 
         this.$ajax.get(`${api}${request}?start=${Math.floor(Math.random()*10)}`)
 	        .then((res)=>{
@@ -51,7 +51,7 @@ export default {
 	                 this.freshWidth(el.children[0]); 
 	                 this.scroller.refresh();                   
 	            })             
-	        })   
+	        }) 
     },
     methods:{
     	initScroll(el){

@@ -23,10 +23,7 @@ export default new Router({
     		path:'/',
 	         redirect:"/home"
 	    },
-	    {
-    		path:'/classify/:type',
-			component:Classify,
-	    },
+	
     	{
     		path:'/home',
 	        component:Main,
@@ -43,7 +40,12 @@ export default new Router({
 		    	{
 		    		path:'/search',
 			        component:Search
-		    	},		    
+		    	},	
+		    	{
+		    		path:'/classify/:type',
+					component:Classify,
+					name:"classify"
+			    },	    
 		    	{
 		    		path:'/vip',
 			        component:Vip,

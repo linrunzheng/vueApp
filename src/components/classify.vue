@@ -28,6 +28,7 @@ import api from "../base/js/api.js"
 export default {
    data(){
    		return{
+   			type:this.$route.params.type,
    			goodsList:[],
    			scroller:null,
    			showLoading:true,	
@@ -40,10 +41,9 @@ export default {
    			bottomPadding:false
    		}
    },
-   computed:{
-   	    url(){
-   	    	
-   	    }
+   activated(){
+   		this.type=this.$route.params.type;
+   	   	this.getData(0);
    },
    methods:{
         filterDirectors(arr){
@@ -66,8 +66,7 @@ export default {
 			}else if(way=="download"){
 				this.download=true;
 			}
-			/*this.$ajax.get(`${api}`)*/
-	    	this.$ajax.get("https://api.douban.com/v2/movie/top250?start="+20*i)
+	    	this.$ajax.get(`${api}${this.type}?start=${20*i}`)
 	   	    	.then((res)=>{ 	  
 	   	    		res=res.data;
 	   	    		this.reset();
@@ -132,7 +131,7 @@ export default {
    	   	    /*setTimeout(()=>{
    	   		    this.scroller.refresh();   	   	
    	   	    },50)	*/   		
-   	   }
+   	   } 	   
    }
 }
 </script>

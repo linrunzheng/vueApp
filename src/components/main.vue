@@ -1,6 +1,8 @@
 <template>
    <div>
-	    <router-view></router-view>	 
+	   <keep-alive exclude="classify">
+	   		 <router-view></router-view>	 
+	   </keep-alive>
 		<foot-nav></foot-nav>
    </div>
 </template>
