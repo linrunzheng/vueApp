@@ -52,6 +52,11 @@ export default {
 	                 this.scroller.refresh();                   
 	            })             
 	        }) 
+
+	     window.onresize=()=>{
+ 			this.freshWidth(el.children[0]); 
+	        this.scroller.refresh();   
+	     }
     },
     methods:{
     	initScroll(el){

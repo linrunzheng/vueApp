@@ -1,7 +1,7 @@
 <template>
    <div id="wrapper" ref="scrollWrap">
        <div class="scroller" ref="scroller" :class="{topPadding,bottomPadding}">
-      		<ul>
+      		<ul ref="scrollList">
 	  			<li class="film-list" v-for="(v,i) in goodsList">
 		    		<div class="film-list__img">
 	   			   		 <img v-lazy="v.images.small" alt="" />                
@@ -16,7 +16,11 @@
 		    	</li>
       		</ul>
         </div>
-        <div id="loading" :class="{upload,download,center}" v-show="showLoading"><img src="../assets/loading.gif" height="32" width="32" alt=""></div>
+        <Loading id="loading" 
+        		 v-show="showLoading"
+         		 :class="{pullUp:loadingPosition.pullUp,pullDown:loadingPosition.pullDown,center:loadingPosition.center}"
+       ></Loading>
+       
     </div>
 </template>
 
@@ -25,25 +29,30 @@
 import BScroll from 'better-scroll'
 import getStyle from '../base/js/util.js'
 import api from "../base/js/api.js"
+import Loading from './loading.vue'
 export default {
-   data(){
+	name:"classify",
+    data(){
    		return{
    			type:this.$route.params.type,
    			goodsList:[],
    			scroller:null,
-   			showLoading:true,	
-   			upload:false,		
-   			download:false,		
-   			center:true,	
-   			page:0,
-   			flag:true,
+   			showLoading:true,					
+   			loadingPosition:{
+   				pullDown:false,		
+	   			pullUp:false,		
+	   			center:true
+   			},
+   			pullDownPage:0,
+   			pullUpflag:true,
+   			pullDownflag:true,
+
    			topPadding:false,
    			bottomPadding:false
    		}
    },
-   activated(){
-   		this.type=this.$route.params.type;
-   	   	this.getData(0);
+   components:{
+   		Loading
    },
    methods:{
         filterDirectors(arr){
@@ -58,81 +67,99 @@ export default {
 	        })
 	        return name                         
 	    },
-	    getData(i,way){
-	    	this.flag=false;
-			this.showLoading=true;  
-			if(way=="upload"){
-				this.upload=true;
-			}else if(way=="download"){
-				this.download=true;
-			}
-	    	this.$ajax.get(`${api}${this.type}?start=${20*i}`)
+	    getData(){	    	
+	    	this.$ajax.get(`${api}${this.type}?count=10&start=0`)
 	   	    	.then((res)=>{ 	  
 	   	    		res=res.data;
-	   	    		this.reset();
-	   	    		this.page+=1;   
 	   	    		if(res.subjects[0]){
-	   	    			if(way=="upload"){
-	   	    				this.goodsList=res.subjects.concat(this.goodsList);
-		   	    		} else{
-		   	    			this.goodsList=this.goodsList.concat(res.subjects);
-		   	    		}
-		   	    		this.$nextTick(()=>{
-		   	    			this.scroller.refresh(); 
-		   	    		}) 	
-	   	    		}else{
-	   	    			this.flag=false;
-	   	    			this.scroller.refresh(); 
-	   	    			alert("到底了")
+		   	    		this.goodsList=res.subjects		   	    		
+	   	    		}else{   	    			
+	   	    			alert("没有数据");
+	   	    		}
+	   	    		this.showLoading=false;	
+	   	    		this.loadingPosition.center=false;	   	    				   	    			   	    			    		
+	   	    	})
+	   	    	.catch((error)=>{
+	   	    		alert(error)
+	   	    	})
+	    },
+	    pullUp(callback){   
+	    	this.$ajax.get(`${api}${this.type}?count=10&start=${Math.floor(Math.random()*250)}`)
+		    	.then((res)=>{ 	  
+		   	    	this.goodsList=res.data.subjects.concat(this.goodsList);
+		   	    	callback();
+		   	    })
+		   	    .catch((error)=>{
+	   	    		alert(error)
+	   	    	})
+	    },
+	    pullDown(callback){
+	    	this.$ajax.get(`${api}${this.type}?count=10&start=${(++this.pullDownPage)*10}`)
+		    	.then((res)=>{ 	  
+	   	    		res=res.data;
+	   	    		if(res.subjects[0]){
+	   	    			this.goodsList=this.goodsList.concat(res.subjects);	
+	   	    			callback();	   	    		
+	   	    		}else{   	    			
+	   	    			alert("已经到底了")
 	   	    		}	   	    				   	    			   	    			    		
 	   	    	})
 	   	    	.catch((error)=>{
 	   	    		alert(error)
 	   	    	})
 	    },
-	    reset(){
-	    	this.showLoading=false;  
-    		this.center=false; 
-    		this.upload=false; 
-    		this.download=false;
-    		this.topPadding=false;
-    		this.bottomPadding=false;
-    		this.flag=true;     
+	    closeEntry(type){
+	    	this[type+"flag"]=false;
+			this.showLoading=true;
+			this.loadingPosition[type]=true;
+	    },
+	    openEntry(type){
+	    	this.showLoading=false;
+	    	this[type+"flag"]=true;
+	    	this.loadingPosition[type]=false;
+	    },
+	    getMoreData(type){
+	    	this.closeEntry(type);
+			this[type](()=>{												
+				setTimeout(()=>{
+					this.openEntry(type);
+				},500)
+			})
 	    }
+	   
    },
-    mounted(){
-    	var self=this;
-    	self.scroller = new BScroll(self.$refs.scrollWrap,{
+   watch:{
+   		goodsList(){
+   			this.$nextTick(()=>{
+   				this.scroller.refresh(); 
+   			}) 	
+   		}
+   },
+    mounted(){   	
+		const {scroller,scrollWrap,scrollList}=this.$refs;
+    	this.scroller = new BScroll(scrollWrap,{
     		click:true,
     		probeType:3
     	});
-    	self.getData(self.page);
+    	this.getData(this.page);
+	
+    	this.scroller.on("scroll",(pos)=>{				
+			var height=getStyle(scroller,"height");
+			var pageHeight=getStyle(scrollWrap,"height");
+			var distance=getStyle(scrollList.children[0],"height")/3;
+			if(pos.y>distance){	
+				if(this.pullUpflag){
+					this.getMoreData("pullUp");
+				}			
+				
+			}else if(pos.y-pageHeight<-height-distance){
+				if(this.pullDownflag){
+					this.getMoreData("pullDown");
+				}			
+			}
+    	})    
 
-    	self.scroller.on("scroll",function(pos){
-
-    		if(self.flag==true){
-    			var el=self.$refs.scroller;
-	    		var wrap=self.$refs.scrollWrap;
-	    		var height=getStyle(el,"height");
-	    		var pageHeight=getStyle(wrap,"height");
-	   	
-				if(pos.y>80){
-					self.getData(self.page,"upload");
-				}else if(pos.y-pageHeight<-height-80){
-					self.getData(self.page,"download");
-				}
-
-    		}
-    		
-    	})    	  	    
-   },
-   watch:{
-   	   goodsList(){
-   	   	    /*setTimeout(()=>{
-   	   		    this.scroller.refresh();   	   	
-   	   	    },50)	*/   		
-   	   } 	   
-   }
+   }  
 }
 </script>
 
@@ -150,9 +177,7 @@ export default {
 			&.topPadding{
 				top:1rem;
 			}	
-			&.bottomPadding{
-				bottom:2rem;
-			}		
+				
 		}
 		#loading{
 			text-align: center;
@@ -164,10 +189,10 @@ export default {
 				left:50%;
 				transform:translate(-50%,-50%);
 			}
-			&.upload{
+			&.pullUp{
 				top:0;
 			}
-			&.download{
+			&.pullDown{
 				bottom:0;
 			}
 			img{
