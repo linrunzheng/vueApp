@@ -7,7 +7,7 @@
         </h3>
         <div class="film__list" :ref="el" :data-request="url">         
             <ul class="clearfix">
-                <router-link tag="li" v-for="(v,i) in array" :to='{path:"/film-detail/"+v.id}'>
+                <router-link tag="li" v-for="(v,i) in array" :key="v.id" :to='{path:"/film-detail/"+v.id}'>
                     <div class="film__list__img"><img v-lazy="v.images.small" alt=""></div>
                     <div class="film__list__detail">
                         <h4 class="film__list__title">{{v.title}}</h4>

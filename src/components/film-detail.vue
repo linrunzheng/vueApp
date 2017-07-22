@@ -101,7 +101,8 @@ export default {
 	.film-detail{
 		&__baseInfo{
 			height: 4rem;
-			position: relative;			
+			position: relative;		
+			background:no-repeat top left/cover;	
 			#shadow{position: absolute;
 				top:0;left:0;
 				width:100%;height:100%;

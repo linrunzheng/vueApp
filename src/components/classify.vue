@@ -2,7 +2,7 @@
    <div id="wrapper" ref="scrollWrap">
        <div class="scroller" ref="scroller" :class="{topPadding,bottomPadding}">
       		<ul ref="scrollList">
-	  			<router-link class="film-list" v-for="(v,i) in goodsList" :keys="v.id" tag="li" :to='{path:"/film-detail/"+v.id}'>
+	  			<router-link class="film-list" v-for="(v,i) in goodsList" :key="v.id" tag="li" :to='{path:"/film-detail/"+v.id}'>
 		    		<div class="film-list__img">
 	   			   		 <img v-lazy="v.images.small" alt="" />                
 		    		</div>
