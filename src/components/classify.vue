@@ -1,27 +1,28 @@
 <template>
-   <div id="wrapper" ref="scrollWrap">
-       <div class="scroller" ref="scroller" :class="{topPadding,bottomPadding}">
-      		<ul ref="scrollList">
-	  			<router-link class="film-list" v-for="(v,i) in goodsList" :key="v.id" tag="li" :to='{path:"/film-detail/"+v.id}'>
-		    		<div class="film-list__img">
-	   			   		 <img v-lazy="v.images.small" alt="" />                
-		    		</div>
-		    		<div class="film-list__detail">
-		    			<p class="film-list__detail__title">{{v.title}}</p>
-	              		<p class="film-list__detail__director">导演：{{filterDirectors(v.directors)}}</p>
-		    			<p class="film-list__detail__year">年份：{{v.year}}<span>{{v.stock}}</span></p>
-		    			<p class="film-list__detail__type">类别：{{v.genres.join(" / ")}}<span></span></p>
-		    			<p class="film-list__detail__rank">评分：<span>{{v.rating.average}}分</span></p>
-		    		</div>    			    		
-	  			</router-link>
-      		</ul>
-        </div>
-        <Loading id="loading" 
-        		 v-show="showLoading"
-         		 :class="{pullUp:loadingPosition.pullUp,pullDown:loadingPosition.pullDown,center:loadingPosition.center}"
-       ></Loading>
-       
-    </div>
+   <transition name="slide">
+	   	<div id="wrapper" ref="scrollWrap">
+	       <div class="scroller" ref="scroller" :class="{topPadding,bottomPadding}">
+	      		<ul ref="scrollList">
+		  			<router-link class="film-list" v-for="(v,i) in goodsList" :key="v.id" tag="li" :to='{path:"/film-detail/"+v.id}'>
+			    		<div class="film-list__img">
+		   			   		 <img v-lazy="v.images.small" alt="" />                
+			    		</div>
+			    		<div class="film-list__detail">
+			    			<p class="film-list__detail__title">{{v.title}}</p>
+		              		<p class="film-list__detail__director">导演：{{filterDirectors(v.directors)}}</p>
+			    			<p class="film-list__detail__year">年份：{{v.year}}<span>{{v.stock}}</span></p>
+			    			<p class="film-list__detail__type">类别：{{v.genres.join(" / ")}}<span></span></p>
+			    			<p class="film-list__detail__rank">评分：<span>{{v.rating.average}}分</span></p>
+			    		</div>    			    		
+		  			</router-link>
+	      		</ul>
+	        </div>
+	        <Loading id="loading" 
+	        		 v-show="showLoading"
+	         		 :class="{pullUp:loadingPosition.pullUp,pullDown:loadingPosition.pullDown,center:loadingPosition.center}"
+	       ></Loading>	     
+	    </div>
+   </transition>
 </template>
 
 <script>
@@ -37,7 +38,7 @@ export default {
    			type:this.$route.params.type,
    			goodsList:[],
    			scroller:null,
-   			showLoading:true,					
+   			showLoading:false,					
    			loadingPosition:{
    				pullDown:false,		
 	   			pullUp:false,		
@@ -68,6 +69,7 @@ export default {
 	        return name                         
 	    },
 	    getData(){	    	
+	    	this.showLoading=true;
 	    	this.$ajax.get(`${api}${this.type}?count=10&start=0`)
 	   	    	.then((res)=>{ 	  
 	   	    		res=res.data;
@@ -172,9 +174,11 @@ export default {
     #wrapper{
     	position: fixed;
     	top:0;
-    	bottom:1.111rem;	
+    	bottom:0;	
     	width: 100%;
     	overflow: hidden;
+    	background:#fff;
+    	z-index: 99999;
 		.scroller{
 			position: absolute;
 			width: 100%;
@@ -238,4 +242,11 @@ export default {
 	   }
     }
    
+   .slide-enter-active{
+        transition:all 0.4s;
+    }
+    .slide-enter, .slide-leave-active{
+        transform:translate3d(100%,0,0);
+        transition:all 0.4s;
+    }
 </style>

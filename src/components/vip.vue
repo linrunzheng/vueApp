@@ -1,7 +1,5 @@
-<template>
-	<!-- <transition name="slide" mode="out-in"> -->
-		<router-view></router-view>
-	<!-- </transition> -->
+<template>	
+	<router-view></router-view>
 </template>
 
 <script>
@@ -16,11 +14,5 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-	.slide-enter-active{
-        transition:all 0.4s;
-    }
-    .slide-enter, .slide-leave-active{
-        transform:translateX(-100%);
-        transition:all 0.4s;
-    }
+	
 </style>

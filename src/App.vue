@@ -22,6 +22,19 @@ body{
 		height:100%;
 		font-family: Microsoft YaHei;
 	}	
+
+	.swiper-pagination-bullet{
+		width:8px;
+		height:8px;
+		[data-dpr="2"] & {
+	    	width:16px;
+			height:16px;
+	    }
+	    [data-dpr="3"] & {
+         	width:24px;
+     		height:24px;
+	    }
+	}
 }
 
 

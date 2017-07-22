@@ -9,8 +9,7 @@
             
 			     <p class="user-detail__message__phone">地址：<span>https://github.com/linrunzheng</span></p>
             </div>
-            <span class="iconfont icon-set setting setting--test1" @click="isShow=!isShow"></span>
-            <span class="iconfont icon-set setting setting--test2" @click="toSetting"></span>
+            <span class="iconfont icon-set setting" @click="isShow=!isShow"></span>
         </div>
         <!-- 个人中心 -->
         <!-- 订单状态 -->
@@ -138,12 +137,10 @@ export default {
         top:0.2rem;
         padding: 0.2344rem;
         @include fz(20px);
-        &.setting--test1{
-        	left:0.2rem;
-        }
-        &.setting--test2{
+        &.setting{
         	right:0.2rem;
         }
+       
 
     }
     .user-detail__img{

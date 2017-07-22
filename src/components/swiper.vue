@@ -44,6 +44,7 @@ export default {
 	        &:nth-of-type(4){
 	        	@include dpr-img("../assets/","swiper3");
 	        }  
-	    }
+	    }	   
 	}
+	
 </style>

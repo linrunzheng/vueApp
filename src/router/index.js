@@ -7,7 +7,6 @@ import Vip from '@/components/vip.vue'
 import Login from '@/components/login.vue'
 import Main from '@/components/main.vue'
 import vipMessage from '@/components/vip-message.vue'
-import vipSetting from '@/components/vip-setting.vue'
 import Classify from '@/components/classify.vue'
 import FilmDetail from '@/components/film-detail.vue'
 
@@ -23,8 +22,7 @@ export default new Router({
     	{
     		path:'/',
 	         redirect:"/home"
-	    },
-	
+	    },	
     	{
     		path:'/home',
 	        component:Main,
@@ -42,11 +40,7 @@ export default new Router({
 		    		path:'/search',
 			        component:Search
 		    	},	
-		    	{
-		    		path:'/classify/:type',
-					component:Classify,
-					name:"classify"
-			    },	    
+		      
 		    	{
 		    		path:'/vip',
 			        component:Vip,
@@ -58,16 +52,16 @@ export default new Router({
 			        	{
 				    		path:'message',
 					        component:vipMessage,
-				    	},
-
-				    	{
-				    		path:'set',
-					        component:vipSetting,
-				    	},
+				    	}
 			        ]
 		    	}
 	        ]
     	},
+    	{
+    		path:'/classify/:type',
+			component:Classify,
+			name:"classify"
+	    },	  
 		{
     		path:'/login',
 	        component:Login

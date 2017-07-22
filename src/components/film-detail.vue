@@ -1,6 +1,8 @@
 <template>
-	<div>
+	<transition name="slide" mode="out-in"> 
+	<div id="detail-container">
 		<div class="film-detail" v-show="!loading">		
+			<div class="iconfont icon-back back" @click="goBack"></div>
 			<div class="film-detail__baseInfo" :style="{backgroundImage:'url('+bgPic+')'}">
 				<div id="shadow">
 					<div class="film-detail__baseInfo__img">
@@ -30,8 +32,9 @@
 				<button>Vuex添加测试数据到购物车</button>
 			</div>	
 		</div>
-		<Loading id="loading" v-show="loading"></Loading>
+		<div id="loading" v-show="loading"><img src="../assets/transition.gif" alt=""></div>
 	</div>
+	</transition> 
 </template>
 
 <script>
@@ -41,7 +44,7 @@ export default {
     name: 'detail',
     data () {
     	return {
-    		loading:true,
+    		loading:false,
     		id:this.$route.params.id,
     		smallPic:"",
     		bgPic:"",
@@ -58,10 +61,13 @@ export default {
  	components:{
  		Loading
  	},
-  	created () {
+  	mounted () {
     	this.fetchData();
     },
  	methods: {
+ 		goBack(){
+ 			this.$router.back();
+ 		},
  		 filterData(arr){
 	        var name="";         
 	        arr.forEach((item,i)=>{
@@ -98,6 +104,14 @@ export default {
 
 <style lang="scss" scoped>
 @import '../base/css/base.scss';
+#detail-container{
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	z-index: 99999;
+	background:#fff;
+}
+
 	.film-detail{
 		&__baseInfo{
 			height: 4rem;
@@ -185,7 +199,28 @@ export default {
 		position: absolute;
 		top:50%;
 		left:50%;
-		transform:translate(-50%,-50%)
+		transform:translate(-50%,-50%);
+		img{
+			width: 100%;
+			height: auto;	
+		}
 	}
+	.back{
+		@include fz(25px);
+		color: #fff;		
+		padding: 0.111rem;
+		position: absolute;
+		top:0;
+		left:0;
+		z-index: 1000;
+	}
+
+	.slide-enter-active{
+        transition:all 0.4s;
+    }
+    .slide-enter, .slide-leave-active{
+        transform:translate3d(-100%,0,0);
+        transition:all 0.4s;
+    }
 	
 </style>
