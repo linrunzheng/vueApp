@@ -1,23 +1,20 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Index from '@/components/index'
-import Car from '@/components/car.vue'
-import Search from '@/components/search.vue'
-import Vip from '@/components/vip.vue'
-import Login from '@/components/login.vue'
-import Main from '@/components/main.vue'
-import vipMessage from '@/components/vip-message.vue'
-import Classify from '@/components/classify.vue'
-import FilmDetail from '@/components/film-detail.vue'
+
+const Index = r => require.ensure([], () => r(require('@/components/index')), 'index')
+const Car = r => require.ensure([], () => r(require('@/components/car')), 'car')
+const Search = r => require.ensure([], () => r(require('@/components/search')), 'search')
+const Vip = r => require.ensure([], () => r(require('@/components/vip')), 'vip')
+const Login = r => require.ensure([], () => r(require('@/components/login')), 'login')
+const Main= r => require.ensure([], () => r(require('@/components/main')), 'main')
+const vipMessage= r => require.ensure([], () => r(require('@/components/vip-message')), 'main')
+const Classify = r => require.ensure([], () => r(require('@/components/classify')), 'classify')
+const FilmDetail = r => require.ensure([], () => r(require('@/components/film-detail')), 'filmdetail')
 
 
 Vue.use(Router)
 
 export default new Router({
-	mode:"history",
-	scrollBehavior (to, from, savedPosition) {
-	  return { x: 0, y: 0 }
-	},
     routes: [	
     	{
     		path:'/',
