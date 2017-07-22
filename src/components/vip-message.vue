@@ -18,25 +18,25 @@
             <ul>
                 <li classs="order-status order-status--unpay">
                     <a>
-                        <div class="iconfont icon-wuliu2"><span>1</span></div>
+                        <div class="iconfont icon-wuliu2"><span>{{randomCount()}}</span></div>
                         <p>待付款</p>
                     </a>
                 </li>
                  <li classs="order-status order-status--unsend">
                     <a>
-                        <div class="iconfont icon-wuliu2"><span>3</span></div>
+                        <div class="iconfont icon-wuliu2"><span>{{randomCount()}}</span></div>
                         <p>待发货</p>
                     </a>
                 </li>
                  <li classs="order-status order-status--sent">
                     <a>
-                        <div class="iconfont icon-wuliu2"><span>7</span></div>
+                        <div class="iconfont icon-wuliu2"><span>{{randomCount()}}</span></div>
                         <p>已发货</p>
                     </a>
                 </li>
                  <li classs="order-status order-status--paid">
                     <a>
-                        <div class="iconfont icon-wuliu2"><span>11</span></div>
+                        <div class="iconfont icon-wuliu2"><span>{{randomCount()}}</span></div>
                         <p>已完成</p>
                     </a>
                 </li>                             
@@ -103,15 +103,20 @@
 export default {
     data(){
         return {
-            isShow:false
+            isShow:false           
         }
     },
+
     methods:{
         hideSilde(){
             this.isShow=!this.isShow
         },
         toSetting(){
         	this.$router.push({path:"/vip/set"})
+        },
+        randomCount(){
+            var number= Math.floor(Math.random()*150);
+            return number>100?99:number
         }
     }
 }

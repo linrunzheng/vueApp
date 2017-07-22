@@ -2,7 +2,7 @@
    <div id="wrapper" ref="scrollWrap">
        <div class="scroller" ref="scroller" :class="{topPadding,bottomPadding}">
       		<ul ref="scrollList">
-	  			<li class="film-list" v-for="(v,i) in goodsList">
+	  			<router-link class="film-list" v-for="(v,i) in goodsList" :keys="v.id" tag="li" :to='{path:"/film-detail/"+v.id}'>
 		    		<div class="film-list__img">
 	   			   		 <img v-lazy="v.images.small" alt="" />                
 		    		</div>
@@ -13,7 +13,7 @@
 		    			<p class="film-list__detail__type">类别：{{v.genres.join(" / ")}}<span></span></p>
 		    			<p class="film-list__detail__rank">评分：<span>{{v.rating.average}}分</span></p>
 		    		</div>    			    		
-		    	</li>
+	  			</router-link>
       		</ul>
         </div>
         <Loading id="loading" 
@@ -80,6 +80,7 @@ export default {
 	   	    		this.loadingPosition.center=false;	   	    				   	    			   	    			    		
 	   	    	})
 	   	    	.catch((error)=>{
+	   	    		this.showLoading=false;	   	    		
 	   	    		alert(error)
 	   	    	})
 	    },
@@ -90,7 +91,8 @@ export default {
 		   	    	callback();
 		   	    })
 		   	    .catch((error)=>{
-	   	    		alert(error)
+		   	    	this.showLoading=false;	
+	   	    		alert(error);
 	   	    	})
 	    },
 	    pullDown(callback){
@@ -100,11 +102,13 @@ export default {
 	   	    		if(res.subjects[0]){
 	   	    			this.goodsList=this.goodsList.concat(res.subjects);	
 	   	    			callback();	   	    		
-	   	    		}else{   	    			
+	   	    		}else{   	 
+	   	    			this.showLoading=false;	   			
 	   	    			alert("已经到底了")
 	   	    		}	   	    				   	    			   	    			    		
 	   	    	})
 	   	    	.catch((error)=>{
+	   	    		this.showLoading=false;	
 	   	    		alert(error)
 	   	    	})
 	    },

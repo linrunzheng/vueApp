@@ -7,7 +7,7 @@
         </h3>
         <div class="film__list" :ref="el" :data-request="url">         
             <ul class="clearfix">
-                <li v-for="(v,i) in array">
+                <router-link tag="li" v-for="(v,i) in array" :to='{path:"/film-detail/"+v.id}'>
                     <div class="film__list__img"><img v-lazy="v.images.small" alt=""></div>
                     <div class="film__list__detail">
                         <h4 class="film__list__title">{{v.title}}</h4>
@@ -16,7 +16,7 @@
                             <span :class="{rankColor:v.rating.average>((i-0.5)*2)}" class="iconfont icon-rank" v-for="i in 5"></span>
                         </p>
                     </div>
-                </li>
+                </router-link>    
             </ul>
              <Loading v-show="!array[0]" class="loading-center"></Loading>
         </div>
