@@ -17,29 +17,31 @@ Vue.use(Router)
 export default new Router({
     routes: [	
     	{
-    		path:'/',
-	         redirect:"/home"
+    		path:'',
+	        redirect:"/home"
 	    },	
     	{
     		path:'/home',
 	        component:Main,
 	        children:[
 	        	{
-		    		path:'/',
-			        redirect:"/index"
+		    		path:'',
+			        redirect:"index"
 		    	},
 
 	        	{
-		    		path:'/index',
+	        		name:"index",
+		    		path:'index',
 			        component:Index
 		    	},
 		    	{
-		    		path:'/search',
+		    		name:"search",
+		    		path:'search',
 			        component:Search
-		    	},	
-		      
+		    	},			     
 		    	{
-		    		path:'/vip',
+		    		name:"vip",
+		    		path:'vip',
 			        component:Vip,
 			        children:[
 			        	{
@@ -64,6 +66,7 @@ export default new Router({
 	        component:Login
 	    },
 	    {
+	    	name:"car",
     		path:'/car',
 	        component:Car
     	},

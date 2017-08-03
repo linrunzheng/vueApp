@@ -23,7 +23,7 @@
 	    </ul>
 	    <div class="car-foot-nav">
 	    	<button class="sum-price">总额：￥{{sum}}</button>
-	    	<button class="continue-shopping">继续购物</button>
+	    	<router-link :to='{name:"index"}' class="continue-shopping" tag="button">继续购物</router-link>
 	    	<button class="to-pay">去结算</button>
 	    </div>
    </div>

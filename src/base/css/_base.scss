@@ -14,13 +14,7 @@
     }
 }
 
-@mixin poa($w, $h, $l, $t) {
-    position: absolute;
-    width: $w;
-    height: $h;
-    left: $l;
-    top: $t;
-}
+
 
 @mixin table-center {
     display: table-cell;
@@ -61,8 +55,9 @@
 }
 
 @function torem($px) {
-    @return $px / 108px * 1rem;
+    @return $px / 75px * 1rem;
 }
+
 
 $mainColor:#77b59c;
 
