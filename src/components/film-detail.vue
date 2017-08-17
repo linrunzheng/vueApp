@@ -29,7 +29,7 @@
 				<p>{{brief}}</p>
 			</div>
 			<div class="add-to-car">
-				<button>Vuex添加测试数据到购物车</button>
+				<button @click="addToCar(id)">Vuex添加测试数据到购物车</button>
 			</div>	
 		</div>
 		<div id="loading" v-show="loading"><img src="../assets/transition.gif" alt=""></div>
@@ -46,6 +46,9 @@ export default {
     	return {
     		loading:false,
     		id:this.$route.params.id,
+    		filmDetail:{
+
+    		},
     		smallPic:"",
     		bgPic:"",
     		averageRating:0,
@@ -64,9 +67,32 @@ export default {
   	mounted () {
     	this.fetchData();
     },
+  
  	methods: {
  		goBack(){
  			this.$router.back();
+ 		},
+ 		addToCar(id){
+ 			var carList=this.$store.state.goodsList;
+ 			var idExist=carList.find((item)=>{
+ 				return item.id==id
+ 			})
+
+ 			if(!idExist){
+ 				var data={
+ 					url:this.smallPic,
+                    title:this.title,
+                    price:Math.floor(Math.random()*100),
+                    stock:"盒",
+                    number:Math.floor(Math.random()*100),
+                    select:false,
+                    id:this.id
+ 				}
+ 				this.$store.commit("addGoods",data);			
+				
+ 			}else{
+ 				return alert("已加入購物車")
+ 			}
  		},
  		 filterData(arr){
 	        var name="";         

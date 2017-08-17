@@ -13,9 +13,9 @@
 	    			<p class="car-list__detail__sum">小计：<span>￥{{v.price*v.number}}</span></p>
 	    		</div>
 	    		<div class="car-list__operate">
-	    			<span class="iconfont icon-shanchu delete-goods" @click="deleteGoods(i)"></span>
+	    			<span class="iconfont icon-shanchu delete-goods" @click="deleteGoods(v.id)"></span>
 	    			<label >
-	    				<input type="checkbox" name="goods" :checked="v.select==true" @change="toggleSelect(i)">
+	    				<input type="checkbox" name="goods" :checked="v.select==true" @change="toggleSelect(v.id)">
 	    				<span></span>
 	    			</label>
 	    		</div>	   	    		
@@ -34,64 +34,46 @@ export default {
     name: 'car',
     data () {
         return {
-            goodsList:[
-                {
-                    url:"http://localhost:8088/static/img/head.1f55be9.jpg",
-                    title:"测试时 啊啊啊啊1111",
-                    price:10,
-                    stock:"盒",
-                    number:33,
-                    select:true
-                },
-                {
-                    url:"http://localhost:8088/static/img/head.1f55be9.jpg",
-                    title:"测试时 啊啊啊啊2222",
-                    price:2000,
-                    stock:"盒",
-                    number:44,
-                    select:false
-                },
-                {
-                    url:"http://localhost:8088/static/img/head.1f55be9.jpg",
-                    title:"测试时 啊啊啊啊3333",
-                    price:77,
-                    stock:"盒",
-                    number:55,
-                    select:true
-                },
-                {
-                    url:"http://localhost:8088/static/img/head.1f55be9.jpg",
-                    title:"测试时 啊啊啊啊3333",
-                    price:10,
-                    stock:"盒",
-                    number:5,
-                    select:false
-                },
-
-            ]  
-        };
+           
+           
+        }
     },
+   
     methods:{
         handleGoodsNumber(i,val){
             var number=this.goodsList[i].number;
-            this.goodsList[i].number=number+val<=0?1:number+val;
+            this.$store.commit("updateGoods",{
+                  index:i,
+                  key:"number",
+                  value:number+val<=0?1:number+val
+             });  
         },
-        deleteGoods(i){
-            this.goodsList.splice(i,1);
+
+        deleteGoods(id){
+             var i=this.goodsList.findIndex(item=>{
+                return item.id==id
+             })
+             this.$store.commit("deleteGoods",i);
         },
-        toggleSelect(i){
-             this.goodsList[i].select=!this.goodsList[i].select; 
+
+        toggleSelect(id){
+              var i=this.goodsList.findIndex(item=>{
+                return item.id==id
+             })
+             var select=this.goodsList[i].select;
+             this.$store.commit("updateGoods",{
+                  index:i,
+                  key:"select",
+                  value:!select
+             });   
         }
     },
     computed:{
         sum(){
-            var total=0;
-            this.goodsList.forEach((item)=>{
-                if(item.select){
-                    total+=item.price*item.number
-                }             
-            })
-            return total
+            return this.$store.getters.sum
+        },
+         goodsList(){
+          return this.$store.state.goodsList
         }
     }
 };
@@ -106,10 +88,10 @@ export default {
    		@include flex-center;
    		.car-list__img{
    			width:2rem;
-	   		height: 2rem;
+	   		height: 2.8rem;
 	   		img{
 				width: 100%;
-				height: auto;
+				height: 100%;
 	   		}
    		}
    		.car-list__detail{
