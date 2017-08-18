@@ -30,6 +30,7 @@
 			</div>
 			<div class="add-to-car">
 				<button @click="addToCar(id)">Vuex添加测试数据到购物车</button>
+				<span class="add-to-car__tip show" v-if="addSuccess">+1</span>
 			</div>	
 		</div>
 		<div id="loading" v-show="loading"><img src="../assets/transition.gif" alt=""></div>
@@ -45,6 +46,7 @@ export default {
     data () {
     	return {
     		loading:false,
+    		addSuccess:false,
     		id:this.$route.params.id,
     		filmDetail:{
 
@@ -84,11 +86,12 @@ export default {
                     title:this.title,
                     price:Math.floor(Math.random()*100),
                     stock:"盒",
-                    number:Math.floor(Math.random()*100),
+                    number:1,
                     select:false,
                     id:this.id
  				}
- 				this.$store.commit("addGoods",data);			
+ 				this.$store.commit("addGoods",data);
+ 				this.addSuccess=true;			
 				
  			}else{
  				return alert("已加入購物車")
@@ -212,6 +215,7 @@ export default {
 	.add-to-car {
 		text-align: center;
 		margin-top: 1.5rem;
+		position: relative;
 		button{
 			@include fz(13px);
 			background:#fff;
@@ -219,7 +223,25 @@ export default {
 			padding:0.3rem 0.8rem;
 			color:$mainColor;
 			margin: 0 auto;
-		}		
+		}	
+		&__tip{
+			background:red;
+			color:#fff;
+			border-radius: 50%;
+			width:0.5rem;
+			height: 0.5rem;
+			line-height:0.5rem;
+			text-align: center;
+			position: absolute;
+			top:50%;
+			left:50%;
+			margin-left: -0.25rem;
+			margin-top: -0.25rem;
+			@include fz(12px);
+			&.show{
+				animation:move 1.6s forwards;
+			}
+		}	
 	}
 	#loading{
 		position: absolute;
@@ -247,6 +269,19 @@ export default {
     .slide-enter, .slide-leave-active{
         transform:translate3d(-100%,0,0);
         transition:all 0.4s;
+    }
+
+    @keyframes move{
+    	from{
+			opacity: 1;
+			transform:translateY(0);
+
+    	}
+
+    	to{
+			opacity: 0;
+			transform:translateY(-100%);
+    	}
     }
 	
 </style>

@@ -3,7 +3,7 @@
         <ul class="bottom-nav">
             <router-link tag="li" :to='{name:"index"}' class="bottom-nav__li iconfont icon-shouye bottom-nav__li--home"></router-link>
             <router-link tag="li" :to='{name:"search"}' class="bottom-nav__li iconfont icon-ss bottom-nav__li--search"></router-link>
-            <router-link tag="li" :to='{name:"car"}' class="bottom-nav__li iconfont icon-shoppingcart bottom-nav__li--car"></router-link>
+            <router-link tag="li" :to='{name:"car"}' class="bottom-nav__li iconfont icon-shoppingcart bottom-nav__li--car"><span class="goodsNumber" v-show="goddsNumber&&goddsNumber>0">{{goddsNumber}}</span></router-link>
             <router-link tag="li" :to='{name:"vip"}' class="bottom-nav__li iconfont icon-gerenzhongxinxia bottom-nav__li--vip"></router-link>
         </ul>
      </div>
@@ -15,6 +15,11 @@ export default {
     data () {
         return {
          
+        }
+    },
+    computed:{
+        goddsNumber(){
+            return this.$store.getters.goddsNumber
         }
     }
 }
@@ -40,10 +45,26 @@ export default {
                 text-align: center;
                 height:1.111rem;
                 line-height:1.111rem;
-                @include fz(20px)
+                @include fz(20px);
+                position: relative;
+                 .goodsNumber{
+                    position: absolute;
+                    top:0.1rem;left:0.5rem;
+                    width:0.38rem;
+                    height: 0.38rem;
+                    background: red;
+                    color: #fff;
+                    border-radius: 50%;
+                    line-height:0.38rem;
+                    text-align: center;
+                     @include fz(13px);
+                }
+                
             }
         }
     }
+
+
     
     
 

@@ -81,6 +81,7 @@ export default {
 
 <style scoped lang="scss">
 	@import '../base/css/base.scss';
+   .car-list-container >ul{padding-bottom:1.11rem;}
    .car-list{
    		padding: 0.3125rem;
    		position: relative;

@@ -15,7 +15,12 @@ export const store= new Vuex.Store({
                 }             
             })
             return total
+		},
+		goddsNumber:state=>{
+			return state.goodsList.length
 		}
+
+
 	},
 	mutations:{
 		addGoods:(state,data)=>{
