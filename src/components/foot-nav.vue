@@ -34,6 +34,7 @@ export default {
         position: fixed;
         bottom:0;
         width: 100%;
+        z-index: 1001;
         border-top: 0.014rem solid #ddd;
         background: #fff;
         .bottom-nav{

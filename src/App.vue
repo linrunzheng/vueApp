@@ -1,6 +1,6 @@
 <template>
     <div id="app">
-    	<keep-alive exclude="detail">
+    	<keep-alive exclude="classify">
     		 <router-view></router-view>
     	</keep-alive>    
     </div>
@@ -14,7 +14,7 @@
 <style lang="scss">
 
 @import './base/css/normalize.scss';
-@import url('//at.alicdn.com/t/font_nfzwlroyg2vuz0k9.css');
+@import url('//at.alicdn.com/t/font_342152_3xy1p1dtktq33di.css');
 body{
 	background: #f1f8f7;
 	#app{

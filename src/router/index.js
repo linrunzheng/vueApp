@@ -4,7 +4,6 @@ import Router from 'vue-router'
 const Index = r => require.ensure([], () => r(require('@/components/index')), 'index')
 const Car = r => require.ensure([], () => r(require('@/components/car')), 'car')
 const Search = r => require.ensure([], () => r(require('@/components/search')), 'search')
-const Vip = r => require.ensure([], () => r(require('@/components/vip')), 'vip')
 const Login = r => require.ensure([], () => r(require('@/components/login')), 'login')
 const Main= r => require.ensure([], () => r(require('@/components/main')), 'main')
 const vipMessage= r => require.ensure([], () => r(require('@/components/vip-message')), 'main')
@@ -42,17 +41,7 @@ export default new Router({
 		    	{
 		    		name:"vip",
 		    		path:'vip',
-			        component:Vip,
-			        children:[
-			        	{
-				    		path:'',
-					        redirect:"message"
-				    	},
-			        	{
-				    		path:'message',
-					        component:vipMessage,
-				    	}
-			        ]
+			        component:vipMessage		       
 		    	}
 	        ]
     	},

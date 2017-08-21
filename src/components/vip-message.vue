@@ -125,6 +125,7 @@ export default {
  @import '../base/css/base.scss'; 
 
 .vippage-container{
+    padding-bottom: 1.11rem;
     .user-detail {
     position: relative;
     height: 5.0rem;

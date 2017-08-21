@@ -69,6 +69,10 @@ export default {
   	mounted () {
     	this.fetchData();
     },
+    activated(){
+    	console.log("in router-activate");
+    	this.fetchData();
+    },
   
  	methods: {
  		goBack(){
