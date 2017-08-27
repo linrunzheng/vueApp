@@ -110,9 +110,6 @@ export default {
         hideSilde(){
             this.isShow=!this.isShow
         },
-        toSetting(){
-        	this.$router.push({path:"/vip/set"})
-        },
         randomCount(){
             var number= Math.floor(Math.random()*150);
             return number>100?99:number

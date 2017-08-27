@@ -30,30 +30,34 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex'
 export default {
     name: 'car',
     data () {
-        return {
-           
+        return {      
            
         }
     },
    
     methods:{
+        ...mapMutations(
+            ["deleteGoods","updateGoods"]
+        ),
+
         handleGoodsNumber(i,val){
             var number=this.goodsList[i].number;
-            this.$store.commit("updateGoods",{
+            this.updateGoods({
                   index:i,
                   key:"number",
                   value:number+val<=0?1:number+val
-             });  
+             })
         },
 
         deleteGoods(id){
              var i=this.goodsList.findIndex(item=>{
                 return item.id==id
              })
-             this.$store.commit("deleteGoods",i);
+            this.deleteGoods(i);
         },
 
         toggleSelect(id){
@@ -61,11 +65,11 @@ export default {
                 return item.id==id
              })
              var select=this.goodsList[i].select;
-             this.$store.commit("updateGoods",{
+             this.updateGoods({
                   index:i,
                   key:"select",
                   value:!select
-             });   
+             })            
         }
     },
     computed:{
