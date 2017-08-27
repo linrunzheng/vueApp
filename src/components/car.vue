@@ -7,13 +7,13 @@
 	    		</div>
 	    		<div class="car-list__detail">
 	    			<p class="car-list__detail__title">{{v.title}}</p>
-	    			<p class="car-list__detail__number">数量：<button class="number--decrease iconfont icon-jianhao" @click="handleGoodsNumber(i,-1)"></button><input type="text" readonly="" v-model="v.number"><button class="number--increase iconfont icon-iconfont7" @click="handleGoodsNumber(i,1)"></button></p>
+	    			<p class="car-list__detail__number">数量：<button class="number--decrease iconfont icon-jianhao" @click="changeNumber(i,-1)"></button><input type="text" readonly="" v-model="v.number"><button class="number--increase iconfont icon-iconfont7" @click="changeNumber(i,1)"></button></p>
 	    			<p class="car-list__detail__type">规格：<span>{{v.stock}}</span></p>
 	    			<p class="car-list__detail__price">单价：<span>￥{{v.price}}</span></p>
 	    			<p class="car-list__detail__sum">小计：<span>￥{{v.price*v.number}}</span></p>
 	    		</div>
 	    		<div class="car-list__operate">
-	    			<span class="iconfont icon-shanchu delete-goods" @click="deleteGoods(v.id)"></span>
+	    			<span class="iconfont icon-shanchu delete-goods" @click="del(v.id)"></span>
 	    			<label >
 	    				<input type="checkbox" name="goods" :checked="v.select==true" @change="toggleSelect(v.id)">
 	    				<span></span>
@@ -31,6 +31,7 @@
 
 <script>
 import { mapMutations } from 'vuex'
+import { mapGetters } from 'vuex'
 export default {
     name: 'car',
     data () {
@@ -44,7 +45,7 @@ export default {
             ["deleteGoods","updateGoods"]
         ),
 
-        handleGoodsNumber(i,val){
+        changeNumber(i,val){
             var number=this.goodsList[i].number;
             this.updateGoods({
                   index:i,
@@ -53,7 +54,7 @@ export default {
              })
         },
 
-        deleteGoods(id){
+        del(id){
              var i=this.goodsList.findIndex(item=>{
                 return item.id==id
              })
@@ -73,11 +74,11 @@ export default {
         }
     },
     computed:{
-        sum(){
-            return this.$store.getters.sum
-        },
+        ...mapGetters(
+            [ "sum"]
+        ),   
          goodsList(){
-          return this.$store.state.goodsList
+            return this.$store.state.goodsList
         }
     }
 };

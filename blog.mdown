@@ -1,0 +1,142 @@
+什么是vuex?官方的解释是：Vuex 是一个专为 Vue.js 应用程序开发的状态管理模式。它采用集中式存储管理应用的所有组件的状态，并以相应的规则保证状态以一种可预测的方式发生变化。
+
+简单来说就是集中管理所有的状态。
+
+为什么要用vuex
+
+对于父子组件之前的通信，父组件通过porps传递到子组件，子组件通过$emit发送事件都到父组件;
+对于组件与组件之间的通信，可以new一个新的Vue实例，专门用来做event bus进行通信。
+当多个组件之间共享一个状态时，event bus可能就变成这样。
+而使用vuex,可以变成这样。
+
+回到我们的项目，需要共享状态的总共有3组件
+这三个组件都需要用到购物车列表goodsList
+对于详情页面，需要判断当前点击的电影是否已加入购物车，如果goodsList中已存在，则不再加入；
+对于底部导航，当goodsList数量>0时需要显示数字。
+购物车组件就不用说了。
+接下来开始使用VUEX
+首先安装cnpm install vuex --save
+
+安装好后，新建一个store文件同时新建index.js文件，引用并且使用vuex
+import Vue from 'vue'
+import Vuex from 'vuex'
+Vue.use(Vuex);
+
+其次，导出一个vuex.Store实例，可接受一个对象作为参数：
+{
+    state,<!-- 状态 -->
+    getters,<!-- 状态的计算属性 -->
+    mutations,<!-- 用于改变状态 -->
+    actions,<!-- 可包含异步操作的mutation -->
+}
+
+我们先只传入state
+export const store= new Vuex.Store({
+    state:{
+        goodsList:[]
+    }
+})
+
+接着，在main.js中引入并挂载到Vue实例上
+...
+import {store} from './store/index.js'
+
+new Vue({
+  el: '#app',
+  router,
+  store,
+  render: h => h(App)
+})
+
+在购物车组件通过一个计算属性获取vuex的状态goodsList
+
+ computed:{    
+         goodsList(){
+            return this.$store.state.goodsList
+        }
+    }
+
+这样我们就可以通过v-for将购物车列表循环出来了，不过现在是数组空的，我把添加的按钮放到电影详情里面去了。
+    
+  <router-link tag="li" v-for="(v,i) in array" :key="v.id" :to='{path:"/film-detail/"+v.id}'>  
+我们在首页的电影列表套了一层router-link，并将电影的id作为参数，所以点击时就会入到详情页面。在详情页面js中，我们通过this.$route.params.id获取（参数key为id取自我们路由的配置）。获取到id后，接下来就是在某个生命周期（通常是mounted）发送请求获取该电影的data，然后就是赋值操作让数据显示出来了。这里主要讲一下 activated生命周期，由于我们在App.vue使用了keep-alive，所以film-detail组件在第一次进入后就会被缓存，由于该组件不会被销毁，所以之后我们每次进来都会保持第一次进来获取的数据。因此，我们将发送请求的时间点由之前的mounted(已挂载)改变为activated(组件激活时)，这样既能复用组件，又能保证每次进入时都获取最新的数据。
+
+回到vuex，点击详情里面的按钮时，要将该电影加入到购物车，也就是说要改变state的
+状态。vuex规定改变store中的状态的唯一方法是提交mutation，虽然你也可以直接改变，比如点击某个按钮时 this.$store.state.number++，不过最好时通过mutation触发
+
+<!-- 定义mutation -->
+mutations:{
+    add:state=>state.number++                     
+}
+
+<!-- 在某个组件里面使用mutation -->
+this.$store.commit("add");
+
+为了将电影加入购物车，在导出的实例的参数中添加mutations
+export const store= new Vuex.Store({
+    state:{
+        goodsList:[]
+    },
+    mutations:{
+        addGoods:(state,data)=>{
+            state.goodsList.push(data);                      
+        },
+    }
+})
+
+点击按钮时，首先判断该电影是否在购物车已存在，如果存在则不再加入。
+
+var idExist=this.$store.state.goodsList.find((item)=>{
+    return item.id==id
+})
+
+使用es6数组新增find函数来实现，该函数返回满足条件的第一个元素。如果不存在该id，则将对应的数据存入。
+
+    if(!idExist){
+        var data={
+           url:this.smallPic,
+           title:this.title,
+           price:Math.floor(Math.random()*100),
+           stock:"盒",
+           number:1,
+           select:false,
+           id:this.id
+        }
+        this.$store.commit("addGoods",data);
+        this.addSuccess=true;           
+
+    }else{
+        return alert("已加入購物車")
+    }
+
+为了给加入购物车成功一个反馈，写个简单的效果，让+1缓缓移动并且透明度慢慢消失
+<span class="add-to-car__tip show" v-if="addSuccess">+1</span>
+
+<!-- 核心css -->
+
+span{
+  animation:move 1.6s forwards;  
+}
+
+@keyframes move{
+        from{
+            opacity: 1;
+            transform:translateY(0);
+
+        }
+
+        to{
+            opacity: 0;
+            transform:translateY(-100%);
+        }
+    }
+  
+点击首页的任意一个电影，就会进入电影详情页面
+
+
+
+
+
+
+点击每个电影列表的时候，需要调转到电影详情页面；
+因此，在点击事件中，把每个电影对应的ID传过去；

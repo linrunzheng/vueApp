@@ -19,8 +19,6 @@ export const store= new Vuex.Store({
 		goddsNumber:state=>{
 			return state.goodsList.length
 		}
-
-
 	},
 	mutations:{
 		addGoods:(state,data)=>{

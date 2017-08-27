@@ -66,14 +66,11 @@ export default {
  	components:{
  		Loading
  	},
-  	mounted () {
-    	this.fetchData();
-    },
     activated(){
     	console.log("in router-activate");
     	this.fetchData();
     },
-  
+
  	methods: {
  		goBack(){
  			this.$router.back();
