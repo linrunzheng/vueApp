@@ -62,7 +62,7 @@ new Vue({
 我们在首页的电影列表套了一层router-link，并将电影的id作为参数，所以点击时就会入到详情页面。在详情页面js中，我们通过this.$route.params.id获取（参数key为id取自我们路由的配置）。获取到id后，接下来就是在某个生命周期（通常是mounted）发送请求获取该电影的data，然后就是赋值操作让数据显示出来了。这里主要讲一下 activated生命周期，由于我们在App.vue使用了keep-alive，所以film-detail组件在第一次进入后就会被缓存，由于该组件不会被销毁，所以之后我们每次进来都会保持第一次进来获取的数据。因此，我们将发送请求的时间点由之前的mounted(已挂载)改变为activated(组件激活时)，这样既能复用组件，又能保证每次进入时都获取最新的数据。
 
 回到vuex，点击详情里面的按钮时，要将该电影加入到购物车，也就是说要改变state的
-状态。vuex规定改变store中的状态的唯一方法是提交mutation，虽然你也可以直接改变，比如点击某个按钮时 this.$store.state.number++，不过最好时通过mutation触发
+状态。vuex规定改变store中的状态的唯一方法是提交mutation，虽然你也可以直接改变，比如点击某个按钮时 this.$store.state.number++，不过最好时通过mutation触发。通常我们走路都是正着走的，假如你非要倒立着走，也没办法拦着你。
 
 <!-- 定义mutation -->
 mutations:{
@@ -130,13 +130,132 @@ span{
             transform:translateY(-100%);
         }
     }
+
+详情页面搞定后，来看底部导航。当购物车数量大于0时，底部导航需要显示当前购物车的数量，也即是goodsList.length;
+
+可以通过this.$store.state.goodsList.length来取得，不过最好的办法是通过vuex的getters来获取。因为假如你有多个页面需要用到这个length时，你可能就会在每个需要用到的地方复制这段代码过来“this.$store.state.goodsList.length”。
+
+在参数中加一个getters
+
+export const store= new Vuex.Store({
+    state:{
+        goodsList:[]
+    },
+    getters:{
+        goddsNumber:state=>{
+            return state.goodsList.length
+        }
+    },
+    mutations:{
+        addGoods:(state,data)=>{
+            state.goodsList.push(data);                      
+        },
+    }
+})
+
+使用的方法跟获取state基本一致，只不过是由state.xx改为getters.xx
+
+computed:{
+       number(){
+          return this.$store.getters.number
+      }
+  }
+我们希望当number>0才显示，无非就是一个v-show="number>0"
+
+接着是购物车页面。
+购物车涉及到的操作有：数量加，数量减，是否选中，删除
+看起来需要4个方法，实际上总结一下2个方法就够了，1个是delete，1个是update
+
+delete时：获取index后通过splice（index,1）;
+
+update时：同样的需要获取index，之后只需要判断哪个状态需要改变进行操作即可。比如number+1，或者number-1，或者选中状态为true变为false，由false变为true。我们只需要将要改变和key和要设置的value都作为参数，就可以实现1个方法进行多个操作。
+
+在mutation中再加2个方法：
+mutations:{
+        deleteGoods(state,index){
+            state.goodsList.splice(index,1);    
+        },
+    updateGoods(state,data){
+       <!--index为操作第几个元素，key为要改变的key,value为新的值 -->
+        const {index,key,value}=data;
+        state.goodsList[index][key]=value;  
+    }
+}
+
+2个方法都需要知道index即需要操作哪一个元素。虽然在购物车这个数组中，我们在循环时已经知道index了，但这不一定就是你需要的那个，除非购物车不分页，一次展示所有数据。假如购物车有100个商品，而且进行了分页，每次取20条数据，那么你点击列表的第一个元素，则会分别对应数组的0,20,40，。。。180，而不分页的第一个元素的index永远是0。因此，我们需要获取元素真正的位置。每个电影都有自己唯一的ID，通过es6数组的findIndex并传入对应的ID,可以返回元素的位置。
+
+写一个方法：
+findPosition(id){
+      return this.goodsList.findIndex(item=>{
+          return item.id==id
+       })
+  },
+
+
+点击删除时，
+ del(id){
+      var i=this.findPosition(id);
+      this.$store.commit("deleteGoods",i);
+  },
+
+点击切换选中时：
+toggleSelect(id){
+     var i=this.findPosition(id);
+     var select=this.goodsList[i].select;
+     this.$store.commit("updateGoods",{
+          index:i,
+          key:"select",
+          value:!select
+     });
+           
+}
+
+点击加减号时，传入+1或者-1：
+ changeNumber(id,val){
+      var i=this.findPosition(id);
+      var number=this.goodsList[i].number;
+        this.$store.commit("updateGoods",{
+            index:i,
+            key:"number",
+            value:number+val<=0?1:number+val
+       })
+  }
+
+ vuex提供了mapMutations 辅助函数将组件中的 methods 映射为 store.commit 调用
+
+ import { mapMutations } from 'vuex'
+
+在methos中使用展开运算符混入到原有方法中，比如：
+
+  methods:{
+      ...mapMutations(
+          ["deleteGoods","updateGoods"]（混入2个方法）
+      ),
+
+    changeNumber(){
+        ...(原有1个方法)
+    }
+}
+
+混入后，现在就有3个方法了，可以通过this.deleteGoods和this.updateGoods调用。
+假如你不想使用原有的名字，想起一个更酷的名字，可以这么写
+
+...mapMutations({
+      coolDelete: 'deleteGoods'，
+      coolUpdate,'updateGoods'
+})
+
+这样一来，点击删除时：
+
+del(id){
+    var i=this.findPosition(id);
+    this.coolDelete(i);
+}
+
+更新的也同理
+
+
+
+
+
   
-点击首页的任意一个电影，就会进入电影详情页面
-
-
-
-
-
-
-点击每个电影列表的时候，需要调转到电影详情页面；
-因此，在点击事件中，把每个电影对应的ID传过去；

@@ -44,8 +44,14 @@ export default {
         ...mapMutations(
             ["deleteGoods","updateGoods"]
         ),
+        findPosition(id){
+            return this.goodsList.findIndex(item=>{
+                return item.id==id
+             })
+        },
 
-        changeNumber(i,val){
+        changeNumber(id,val){
+            var i=this.findPosition(id);
             var number=this.goodsList[i].number;
             this.updateGoods({
                   index:i,
@@ -55,9 +61,7 @@ export default {
         },
 
         del(id){
-             var i=this.goodsList.findIndex(item=>{
-                return item.id==id
-             })
+             var i=this.findPosition(id);
             this.deleteGoods(i);
         },
 
