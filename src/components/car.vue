@@ -7,7 +7,7 @@
 	    		</div>
 	    		<div class="car-list__detail">
 	    			<p class="car-list__detail__title">{{v.title}}</p>
-	    			<p class="car-list__detail__number">数量：<button class="number--decrease iconfont icon-jianhao" @click="changeNumber(i,-1)"></button><input type="text" readonly="" v-model="v.number"><button class="number--increase iconfont icon-iconfont7" @click="changeNumber(i,1)"></button></p>
+	    			<p class="car-list__detail__number">数量：<button class="number--decrease iconfont icon-jianhao" @click="changeNumber(v.id,-1)"></button><input type="text" readonly="" v-model="v.number"><button class="number--increase iconfont icon-iconfont7" @click="changeNumber(v.id,1)"></button></p>
 	    			<p class="car-list__detail__type">规格：<span>{{v.stock}}</span></p>
 	    			<p class="car-list__detail__price">单价：<span>￥{{v.price}}</span></p>
 	    			<p class="car-list__detail__sum">小计：<span>￥{{v.price*v.number}}</span></p>
@@ -66,9 +66,7 @@ export default {
         },
 
         toggleSelect(id){
-              var i=this.goodsList.findIndex(item=>{
-                return item.id==id
-             })
+            var i=this.findPosition(id);
              var select=this.goodsList[i].select;
              this.updateGoods({
                   index:i,
@@ -84,6 +82,11 @@ export default {
          goodsList(){
             return this.$store.state.goodsList
         }
+    },
+    mounted(){
+      this.$ajax.get("/api/car",function(res){
+        console.log(res)
+      })
     }
 };
 </script>
