@@ -10,7 +10,7 @@
     "build": "node build/build.js"
   },
   "dependencies": {
-    "better-scroll": "^0.4.0",
+    "better-scroll": "^1.2.6",
     "vue": "^2.3.3",
     "vue-awesome-swiper": "^2.5.4",
     "vue-lazyload": "^1.0.5",

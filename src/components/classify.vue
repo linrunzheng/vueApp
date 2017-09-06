@@ -1,7 +1,7 @@
 <template>
    <transition name="slide">
 	   	<div id="wrapper" ref="scrollWrap">
-	       <div class="scroller" ref="scroller" :class="{topPadding,bottomPadding}">
+	       <div class="scroller" ref="scroller">
 	      		<ul ref="scrollList">
 		  			<router-link class="film-list" v-for="(v,i) in goodsList" :key="v.id" tag="li" :to='{path:"/film-detail/"+v.id}'>
 			    		<div class="film-list__img">
@@ -19,7 +19,7 @@
 	        </div>
 	        <Loading id="loading" 
 	        		 v-show="showLoading"
-	         		 :class="{pullUp:loadingPosition.pullUp,pullDown:loadingPosition.pullDown,center:loadingPosition.center}"
+	         		 :class='{top:topLoading,bottom:botLoading,center:centerLoading}'
 	       ></Loading>	     
 	    </div>
    </transition>
@@ -28,9 +28,11 @@
 <script>
 
 import BScroll from 'better-scroll'
-import getStyle from '../base/js/util.js'
+import {getStyle,getDeviceRatio} from '../base/js/util.js'
 import api from "../base/js/api.js"
 import Loading from './loading.vue'
+const DEVICE_RATIO=getDeviceRatio();
+
 export default {
 	name:"classify",
     data(){
@@ -38,18 +40,10 @@ export default {
    			type:this.$route.params.type,
    			goodsList:[],
    			scroller:null,
-   			showLoading:false,					
-   			loadingPosition:{
-   				pullDown:false,		
-	   			pullUp:false,		
-	   			center:true
-   			},
-   			pullDownPage:0,
-   			pullUpflag:true,
-   			pullDownflag:true,
-
-   			topPadding:false,
-   			bottomPadding:false
+   			topLoading:false,
+   			botLoading:false,
+   			showLoading:false,					  			
+   			pullDownPage:0, 		
    		}
    },
    components:{
@@ -63,76 +57,87 @@ export default {
 	               name+=item.name
 	            }else{
 	               name+=item.name+" / "
-	            }
-	            
+	            }	            
 	        })
 	        return name                         
+	    },
+	    enable(){
+	    	this.scroller&&this.scroller.enable()
+	    },
+	    disable(){
+	    	this.scroller&&this.scroller.disable()
+	    },
+	    finishPullDown(){
+			this.scroller&&this.scroller.finishPullDown()
+	    },
+	    finishPullUp(){
+			this.scroller&&this.scroller.finishPullUp()
 	    },
 	    getData(){	    	
 	    	this.showLoading=true;
 	    	this.$ajax.get(`${api}${this.type}?count=10&start=0`)
 	   	    	.then((res)=>{ 	  
 	   	    		res=res.data;
-	   	    		if(res.subjects[0]){
+	   	    		if(res.subjects.length>0){
 		   	    		this.goodsList=res.subjects		   	    		
 	   	    		}else{   	    			
 	   	    			alert("没有数据");
 	   	    		}
-	   	    		this.showLoading=false;	
-	   	    		this.loadingPosition.center=false;	   	    				   	    			   	    			    		
+	   	    		this.showLoading=false;	   	    				   	    			   	    			    		
 	   	    	})
 	   	    	.catch((error)=>{
 	   	    		this.showLoading=false;	   	    		
 	   	    		alert(error)
 	   	    	})
 	    },
-	    pullUp(callback){   
-	    	this.$ajax.get(`${api}${this.type}?count=10&start=${Math.floor(Math.random()*250)}`)
-		    	.then((res)=>{ 	  
-		   	    	this.goodsList=res.data.subjects.concat(this.goodsList);
-		   	    	callback();
+	    pullDown(){   
+	    	this.disable();
+	    	this.topLoading=true;
+	    	this.showLoading=true;
+	    	this.$ajax.get(`${api}${this.type}?count=10&start=${Math.floor(Math.random()*100)}`)
+		    	.then((res)=>{
+			    	res=res.data;
+			    	if(res.subjects.length>0){
+			    		this.goodsList=res.subjects.concat(this.goodsList);	    		
+			    	}else{   	 
+			    		this.showLoading=false;	   			
+			    		alert("已经到底了")
+			    	}
+			    	this.enable();
+			    	this.finishPullDown();
+			    	this.topLoading=false;	 
+			    	this.showLoading=false; 		   	    	
 		   	    })
 		   	    .catch((error)=>{
 		   	    	this.showLoading=false;	
+		   	    	this.enable();
+		   	    	this.finishPullDown();	
+		   	    	this.topLoading=false;	
+		   	    	this.showLoading=false; 	
 	   	    		alert(error);
 	   	    	})
 	    },
-	    pullDown(callback){
+	    pullUp(){
+	    	this.disable();
 	    	this.$ajax.get(`${api}${this.type}?count=10&start=${(++this.pullDownPage)*10}`)
 		    	.then((res)=>{ 	  
 	   	    		res=res.data;
-	   	    		if(res.subjects[0]){
-	   	    			this.goodsList=this.goodsList.concat(res.subjects);	
-	   	    			callback();	   	    		
+	   	    		if(res.subjects.length>0){
+	   	    			this.goodsList=this.goodsList.concat(res.subjects);	  	    		
 	   	    		}else{   	 
 	   	    			this.showLoading=false;	   			
 	   	    			alert("已经到底了")
-	   	    		}	   	    				   	    			   	    			    		
+	   	    		}
+	   	    		this.enable();
+	   	    		this.finishPullUp();	   	    				   	    			   	    			    	
 	   	    	})
 	   	    	.catch((error)=>{
 	   	    		this.showLoading=false;	
+	   	    		this.enable();
+	   	    		this.finishPullUp();	   	    
 	   	    		alert(error)
 	   	    	})
-	    },
-	    closeEntry(type){
-	    	this[type+"flag"]=false;
-			this.showLoading=true;
-			this.loadingPosition[type]=true;
-	    },
-	    openEntry(type){
-	    	this.showLoading=false;
-	    	this[type+"flag"]=true;
-	    	this.loadingPosition[type]=false;
-	    },
-	    getMoreData(type){
-	    	this.closeEntry(type);
-			this[type](()=>{												
-				setTimeout(()=>{
-					this.openEntry(type);
-				},500)
-			})
-	    }
-	   
+	    }         
    },
    watch:{
    		goodsList(){
@@ -141,29 +146,45 @@ export default {
    			}) 	
    		}
    },
-    mounted(){   	
+    mounted(){   
 		const {scroller,scrollWrap,scrollList}=this.$refs;
+		/*初始化scroll*/
     	this.scroller = new BScroll(scrollWrap,{
     		click:true,
-    		probeType:3
+    		probeType:3,
+    		pullDownRefresh:{
+    			threshold:70*DEVICE_RATIO,
+				stop:40*DEVICE_RATIO
+    		},
+    		pullUpLoad:{
+    			threshold:-70*DEVICE_RATIO
+    		}
     	});
-    	this.getData(this.page);
+    	/*获取数据*/
+    	this.getData();
 	
-    	this.scroller.on("scroll",(pos)=>{				
+		/*下拉刷新*/
+		this.scroller.on('pullingDown',()=> this.pullDown());
+
+		/*上拉加载更多*/
+		this.scroller.on('pullingUp',()=> this.pullUp());
+
+
+
+
+
+    	/*this.scroller.on("scroll",(pos)=>{				
 			var height=getStyle(scroller,"height");
 			var pageHeight=getStyle(scrollWrap,"height");
-			var distance=getStyle(scrollList.children[0],"height")/3;
+			var distance=getStyle(scrollList.children[0],"height")/2;
 			if(pos.y>distance){	
-				if(this.pullUpflag){
-					this.getMoreData("pullUp");
-				}			
-				
+				console.log("上拉")					
 			}else if(pos.y-pageHeight<-height-distance){
-				if(this.pullDownflag){
-					this.getMoreData("pullDown");
-				}			
+				console.log("下拉")	
 			}
-    	})    
+    	})    */
+
+
 
    }  
 }
@@ -197,12 +218,16 @@ export default {
 				left:50%;
 				transform:translate(-50%,-50%);
 			}
-			&.pullUp{
-				top:0;
+			&.top{
+				position: absolute;
+				top:0;left:0;
 			}
-			&.pullDown{
-				bottom:0;
+			&.bottom{
+				position: absolute;
+				bottom:0;left:0;
 			}
+
+			
 			img{
 				margin: 0 auto;
 				width: 0.889rem;
