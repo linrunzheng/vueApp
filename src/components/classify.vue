@@ -19,7 +19,8 @@
 	        </div>
 	        <Loading id="loading" 
 	        		 v-show="showLoading"
-	         		 :class='{top:topLoading,bottom:botLoading,center:centerLoading}'
+	         		 :class='{pullDownLoading,pullUpLoading,center}'
+	         		 ref="loading"
 	       ></Loading>	     
 	    </div>
    </transition>
@@ -31,6 +32,8 @@ import BScroll from 'better-scroll'
 import {getStyle,getDeviceRatio} from '../base/js/util.js'
 import api from "../base/js/api.js"
 import Loading from './loading.vue'
+
+/*获取当前缩放比*/
 const DEVICE_RATIO=getDeviceRatio();
 
 export default {
@@ -40,10 +43,11 @@ export default {
    			type:this.$route.params.type,
    			goodsList:[],
    			scroller:null,
-   			topLoading:false,
-   			botLoading:false,
+   			center:true,
+   			pullDownLoading:false,
+   			pullUpLoading:false,
    			showLoading:false,					  			
-   			pullDownPage:0, 		
+   			currentPage:0, 		
    		}
    },
    components:{
@@ -73,6 +77,17 @@ export default {
 	    finishPullUp(){
 			this.scroller&&this.scroller.finishPullUp()
 	    },
+	    beforeFetch(type){
+	    	this.disable();
+	    	this[`pull${type}Loading`]=true;	
+	    	this.showLoading=true;
+	    },
+	    afterFetch(type){
+			this.enable();
+	    	this["finishPull"+type]();
+	    	this[`pull${type}Loading`]=false;	 
+	    	this.showLoading=false; 
+	    },
 	    getData(){	    	
 	    	this.showLoading=true;
 	    	this.$ajax.get(`${api}${this.type}?count=10&start=0`)
@@ -83,7 +98,8 @@ export default {
 	   	    		}else{   	    			
 	   	    			alert("没有数据");
 	   	    		}
-	   	    		this.showLoading=false;	   	    				   	    			   	    			    		
+	   	    		this.showLoading=false;	
+					this.center=false;	   	    						   	    			   	    			    		
 	   	    	})
 	   	    	.catch((error)=>{
 	   	    		this.showLoading=false;	   	    		
@@ -91,43 +107,36 @@ export default {
 	   	    	})
 	    },
 	    pullDown(){   
-	    	this.disable();
-	    	this.topLoading=true;
-	    	this.showLoading=true;
-	    	this.$ajax.get(`${api}${this.type}?count=10&start=${Math.floor(Math.random()*100)}`)
-		    	.then((res)=>{
-			    	res=res.data;
-			    	if(res.subjects.length>0){
-			    		this.goodsList=res.subjects.concat(this.goodsList);	    		
-			    	}else{   	 
-			    		this.showLoading=false;	   			
-			    		alert("已经到底了")
-			    	}
-			    	this.enable();
-			    	this.finishPullDown();
-			    	this.topLoading=false;	 
-			    	this.showLoading=false; 		   	    	
-		   	    })
-		   	    .catch((error)=>{
-		   	    	this.showLoading=false;	
-		   	    	this.enable();
-		   	    	this.finishPullDown();	
-		   	    	this.topLoading=false;	
-		   	    	this.showLoading=false; 	
-	   	    		alert(error);
-	   	    	})
+	    	this.beforeFetch("Down");
+	    	setTimeout(()=>{
+		    	this.$ajax.get(`${api}${this.type}?count=10&start=${Math.floor(Math.random()*100)}`)
+			    	.then((res)=>{
+				    	res=res.data;
+				    	if(res.subjects.length>0){
+				    		this.goodsList=res.subjects.concat(this.goodsList);	    		
+				    	}else{   	  			
+				    		alert("已经到底了")
+				    	}
+				    	this.afterFetch("Down");
+				    			   	    	
+			   	    })
+			   	    .catch((error)=>{
+			   	    	this.afterFetch("Down");
+		   	    		alert(error);
+		   	    	})
+			   	},1000)	    	
 	    },
 	    pullUp(){
 	    	this.disable();
-	    	this.$ajax.get(`${api}${this.type}?count=10&start=${(++this.pullDownPage)*10}`)
+	    	this.$ajax.get(`${api}${this.type}?count=10&start=${(++this.currentPage)*10}`)
 		    	.then((res)=>{ 	  
 	   	    		res=res.data;
 	   	    		if(res.subjects.length>0){
 	   	    			this.goodsList=this.goodsList.concat(res.subjects);	  	    		
-	   	    		}else{   	 
-	   	    			this.showLoading=false;	   			
+	   	    		}else{   	 	   	    			   			
 	   	    			alert("已经到底了")
 	   	    		}
+	   	    		this.showLoading=false;	
 	   	    		this.enable();
 	   	    		this.finishPullUp();	   	    				   	    			   	    			    	
 	   	    	})
