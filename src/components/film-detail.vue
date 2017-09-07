@@ -68,6 +68,8 @@ export default {
  	},
     activated(){
     	console.log("in router-activate");
+    	this.id=this.$route.params.id;
+    	this.addSuccess=false;	
     	this.fetchData();
     },
 
