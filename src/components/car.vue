@@ -84,9 +84,7 @@ export default {
         }
     },
     mounted(){
-      this.$ajax.get("/api/car",function(res){
-        console.log(res)
-      })
+      
     }
 };
 </script>

@@ -32,6 +32,7 @@ export default {
 		}
 		span{
 			vertical-align: middle;
+			margin-left: 0.14rem;
 			@include fz(14px)
 		}
 	}

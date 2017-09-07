@@ -17,11 +17,14 @@
 		  			</router-link>
 	      		</ul>
 	        </div>
-	        <Loading id="loading" 
+	        <transition :name="loadingPosition">
+	        	<Loading id="loading" 
 	        		 v-show="showLoading"
 	         		 :class='{pullDownLoading,pullUpLoading,center}'
 	         		 ref="loading"
-	       ></Loading>	     
+	         		 :loadingWord="loadingWord"
+	       		></Loading>	     
+	        </transition> 	             
 	    </div>
    </transition>
 </template>
@@ -36,6 +39,23 @@ import Loading from './loading.vue'
 /*获取当前缩放比*/
 const DEVICE_RATIO=getDeviceRatio();
 
+/**
+ * 
+ * @param threshold 触发事件的阀值，即滑动多少距离触发
+ * @param stop 
+ */
+
+ /*下拉配置*/
+const DOWN_CONFIG={
+	threshold:80*DEVICE_RATIO,
+	stop:40*DEVICE_RATIO
+}
+/*上拉配置*/
+const UP_CONFIG={
+	threshold:-80*DEVICE_RATIO,
+}
+
+
 export default {
 	name:"classify",
     data(){
@@ -47,7 +67,10 @@ export default {
    			pullDownLoading:false,
    			pullUpLoading:false,
    			showLoading:false,					  			
-   			currentPage:0, 		
+   			currentPage:0,  
+   			loadingWord:"正在加载",
+   			loadingPosition:""	,
+   			noMoreData:false	
    		}
    },
    components:{
@@ -66,10 +89,10 @@ export default {
 	        return name                         
 	    },
 	    enable(){
-	    	this.scroller&&this.scroller.enable()
+	    	this.scroller&&this.scroller. enable()
 	    },
-	    disable(){
-	    	this.scroller&&this.scroller.disable()
+	    disable(type){
+	    	this.scroller&&this.scroller. disable()
 	    },
 	    finishPullDown(){
 			this.scroller&&this.scroller.finishPullDown()
@@ -77,16 +100,29 @@ export default {
 	    finishPullUp(){
 			this.scroller&&this.scroller.finishPullUp()
 	    },
-	    beforeFetch(type){
-	    	this.disable();
+	    refresh(){
+			this.scroller&&this.scroller.refresh()
+	    },
+	    beforeFetch(type){	    	
 	    	this[`pull${type}Loading`]=true;	
+	    	this[`inPulling${type}`]=true;
 	    	this.showLoading=true;
+	    	if(type=="Down"){
+	    		this.loadingPosition="top";
+	    		this.loadingWord="正在下拉刷新";
+	    		this.disable();
+	    	}else if(type=="Up"){
+				this.loadingPosition="bot";
+		    	this.loadingWord="正在加载更多"
+	    	}	    	
 	    },
 	    afterFetch(type){
 			this.enable();
 	    	this["finishPull"+type]();
-	    	this[`pull${type}Loading`]=false;	 
 	    	this.showLoading=false; 
+	    	setTimeout(()=>{
+	    		this[`pull${type}Loading`]=false;	
+	   		 },300)    	    	
 	    },
 	    getData(){	    	
 	    	this.showLoading=true;
@@ -106,8 +142,8 @@ export default {
 	   	    		alert(error)
 	   	    	})
 	    },
-	    pullDown(){   
-	    	this.beforeFetch("Down");
+	    pullDown(){   	    	
+	    	this.beforeFetch("Down");  
 	    	setTimeout(()=>{
 		    	this.$ajax.get(`${api}${this.type}?count=10&start=${Math.floor(Math.random()*100)}`)
 			    	.then((res)=>{
@@ -115,37 +151,37 @@ export default {
 				    	if(res.subjects.length>0){
 				    		this.goodsList=res.subjects.concat(this.goodsList);	    		
 				    	}else{   	  			
-				    		alert("已经到底了")
+				    		console.log("已经到底了")
 				    	}
-				    	this.afterFetch("Down");
-				    			   	    	
+				    	this.afterFetch("Down");				    			   	    	
 			   	    })
 			   	    .catch((error)=>{
 			   	    	this.afterFetch("Down");
-		   	    		alert(error);
+		   	    		console.log(error);
 		   	    	})
-			   	},1000)	    	
+		   	    	this.afterFetch("Down");
+			   	},1000)     	  	
 	    },
-	    pullUp(){
-	    	this.disable();
-	    	this.$ajax.get(`${api}${this.type}?count=10&start=${(++this.currentPage)*10}`)
-		    	.then((res)=>{ 	  
-	   	    		res=res.data;
-	   	    		if(res.subjects.length>0){
-	   	    			this.goodsList=this.goodsList.concat(res.subjects);	  	    		
-	   	    		}else{   	 	   	    			   			
-	   	    			alert("已经到底了")
-	   	    		}
-	   	    		this.showLoading=false;	
-	   	    		this.enable();
-	   	    		this.finishPullUp();	   	    				   	    			   	    			    	
-	   	    	})
-	   	    	.catch((error)=>{
-	   	    		this.showLoading=false;	
-	   	    		this.enable();
-	   	    		this.finishPullUp();	   	    
-	   	    		alert(error)
-	   	    	})
+	    pullUp(){    	
+	    	if(!this.noMoreData){
+		    	this.beforeFetch("Up");
+		    	setTimeout(()=>{
+			    	this.$ajax.get(`${api}${this.type}?count=10&start=${(++this.currentPage)*10}`)
+				    	.then((res)=>{ 	  
+			   	    		res=res.data;
+			   	    		if(res.subjects.length>0){
+			   	    			this.goodsList=this.goodsList.concat(res.subjects);	  	    		
+			   	    		}else{   	 	   	    			   			
+			   	    			alert("已经到底了");
+			   	    			this.noMoreData=true;
+			   	    		}
+			   	    		this.afterFetch("Up");	   	    				   	    			   	    			    	
+			   	    	})
+			   	    	.catch((error)=>{
+			   	    		this.afterFetch("Up");	   
+			   	    	})
+		   	    },1000)
+	    	}    	
 	    }         
    },
    watch:{
@@ -155,21 +191,17 @@ export default {
    			}) 	
    		}
    },
-    mounted(){   
+    mounted(){ 
 		const {scroller,scrollWrap,scrollList}=this.$refs;
 		/*初始化scroll*/
     	this.scroller = new BScroll(scrollWrap,{
     		click:true,
     		probeType:3,
-    		pullDownRefresh:{
-    			threshold:70*DEVICE_RATIO,
-				stop:40*DEVICE_RATIO
-    		},
-    		pullUpLoad:{
-    			threshold:-70*DEVICE_RATIO
-    		}
+    		pullDownRefresh:DOWN_CONFIG,
+    		pullUpLoad:UP_CONFIG
     	});
-    	/*获取数据*/
+
+    	/*进入页面先获取数据*/
     	this.getData();
 	
 		/*下拉刷新*/
@@ -177,24 +209,6 @@ export default {
 
 		/*上拉加载更多*/
 		this.scroller.on('pullingUp',()=> this.pullUp());
-
-
-
-
-
-    	/*this.scroller.on("scroll",(pos)=>{				
-			var height=getStyle(scroller,"height");
-			var pageHeight=getStyle(scrollWrap,"height");
-			var distance=getStyle(scrollList.children[0],"height")/2;
-			if(pos.y>distance){	
-				console.log("上拉")					
-			}else if(pos.y-pageHeight<-height-distance){
-				console.log("下拉")	
-			}
-    	})    */
-
-
-
    }  
 }
 </script>
@@ -227,11 +241,11 @@ export default {
 				left:50%;
 				transform:translate(-50%,-50%);
 			}
-			&.top{
+			&.pullDownLoading{
 				position: absolute;
 				top:0;left:0;
 			}
-			&.bottom{
+			&.pullUpLoading{
 				position: absolute;
 				bottom:0;left:0;
 			}
@@ -276,11 +290,26 @@ export default {
 	   }
     }
    
-   .slide-enter-active{
+    .slide-enter-active{
         transition:all 0.4s;
     }
     .slide-enter, .slide-leave-active{
         transform:translate3d(100%,0,0);
         transition:all 0.4s;
     }
+
+	 .top-enter-active,.bot-enter-active{
+	    transition:all 0.2s;
+	}
+
+	.top-enter, .top-leave-active{
+	    transform:translateY(-100%);
+	    transition:all 0.2s;
+	} 
+
+	.bot-enter, .bot-leave-active{
+	    transform:translateY(100%);
+	    transition:all 0.2s;
+	}
+
 </style>
