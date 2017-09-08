@@ -14,7 +14,7 @@
 <style lang="scss">
 
 @import './base/css/normalize.scss';
-@import url('//at.alicdn.com/t/font_342152_3xy1p1dtktq33di.css');
+@import url('//at.alicdn.com/t/font_342152_sf25eoela9f9lik9.css');
 body{
 	background: #f1f8f7;
 	#app{

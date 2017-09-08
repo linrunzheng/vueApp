@@ -2,7 +2,11 @@
   <div ref="wrapper" class="list-wrapper">
     <div class="scroll-content">
         <slot></slot>
-        <Loading></Loading>
+        <div>
+            <PullingWord v-if="!inPulling" :loadingWord="beforePullUpWord"></PullingWord>
+            <Loading v-show="inPulling" :loadingWord='PullingUpWord'></Loading>
+        </div>
+       
     </div>  
   </div>
 </template>
@@ -10,6 +14,11 @@
 <script >
   import BScroll from 'better-scroll'
   import Loading from './loading.vue'
+  import PullingWord from './pulling-word'
+
+  const  PullingUpWord="正在拼命加载中...";
+  const  beforePullUpWord="上拉加载";
+  const  finishPullUpWord="加载完成";
 
   export default {
     props: {
@@ -36,7 +45,10 @@
     },
     data() {
         return {  
-            scroll:null
+            scroll:null,
+            inPulling:false,
+            beforePullUpWord,
+            PullingUpWord
         }
     },
      
@@ -44,6 +56,8 @@
         this.initScroll();
 
         this.scroll.on('pullingUp',()=> {
+            this.PullingUpWord=PullingUpWord;
+            this.inPulling=true;
             this.$emit("onPullUp","上拉加载");
         });
 
@@ -90,12 +104,13 @@
             this.$nextTick(()=>{
                 setTimeout(()=>{
                      this.refresh(); 
-                 },20)              
+                 },50)              
             })  
         }
     },
     components: {
         Loading,
+        PullingWord
     }
   }
 
@@ -148,10 +163,19 @@
     padding: 16px 0;
   }
 
-  /* .loading{
-    position: absolute;
-    bottom:0;
-    left:0;
-  } */
-    
+
+
+    .up-enter-active{
+        transition:all 0.2s;
+    }
+
+    .up-enter, .up-leave-active{
+        transform:translateY(100%);
+        transition:all 0.2s;
+    }
+
+    #c{
+        height:1rem;
+        line-height: 1rem;
+    }
 </style>

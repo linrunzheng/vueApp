@@ -43,7 +43,12 @@ export default {
 			DOWN_CONFIG,
 			UP_CONFIG
 	    };
-	  },
+	},
+    computed:{
+        scrollElement(){
+            return this.$refs.scroll
+        }
+    },
     components:{
   	    Scroller
     },
@@ -52,16 +57,21 @@ export default {
     },
     methods:{
     	pullUpHandle(val){
-    		setTimeout(()=>{
-    			this.$refs.scroll.finishPullUp();
-    			this.$refs.scroll.refresh();
-    		},2000)   		
+            setTimeout(()=>{ 
+                this.scrollElement.PullingUpWord="加载完成"
+            },2000)
+    		setTimeout(()=>{  			
+    			this.filmList.push(1);   			
+    			this.scrollElement.finishPullUp();
+    			this.scrollElement.refresh();
+    			this.scrollElement.inPulling=false;   		
+    		},3000)   		
     	},
     	pullDownHandle(val){
     		setTimeout(()=>{
-    			this.$refs.scroll.finishPullDown();
-    			this.$refs.scroll.refresh();
-    			this.$refs.scroll.enable();
+    			this.scrollElement.finishPullDown();
+    			this.scrollElement.refresh();
+    			this.scrollElement.enable();
     		},2000)   		
     	}
     }

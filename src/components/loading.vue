@@ -23,7 +23,9 @@ export default {
 	.loading{
 		text-align: center;
 		z-index: 100;
-		width: 100%;				
+		width: 100%;
+		height:1rem;
+		line-height: 1rem;				
 		img{
 			margin: 0 auto;
 			width: 0.65rem;
