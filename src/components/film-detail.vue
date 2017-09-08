@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import api from "../base/js/api.js"
+import {api} from "../base/js/api.js"
 import Loading from './loading.vue'
 export default {
     name: 'detail',

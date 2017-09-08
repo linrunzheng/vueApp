@@ -27,7 +27,7 @@
 import BScroll from 'better-scroll'
 import {getStyle} from '../base/js/util.js'
 import Loading from './loading.vue'
-import api from "../base/js/api.js"
+import {api} from "../base/js/api.js"
 export default {
     data () {
 	    return {

@@ -33,7 +33,7 @@
 
 import BScroll from 'better-scroll'
 import {getStyle,getDeviceRatio} from '../base/js/util.js'
-import api from "../base/js/api.js"
+import {api} from "../base/js/api.js"
 import Loading from './loading.vue'
 
 /*获取当前缩放比*/
@@ -42,7 +42,7 @@ const DEVICE_RATIO=getDeviceRatio();
 /**
  * 
  * @param threshold 触发事件的阀值，即滑动多少距离触发
- * @param stop 
+ * @param stop 下拉刷新后回滚
  */
 
  /*下拉配置*/
@@ -89,10 +89,10 @@ export default {
 	        return name                         
 	    },
 	    enable(){
-	    	this.scroller&&this.scroller. enable()
+	    	this.scroller&&this.scroller.enable()
 	    },
 	    disable(type){
-	    	this.scroller&&this.scroller. disable()
+	    	this.scroller&&this.scroller.disable()
 	    },
 	    finishPullDown(){
 			this.scroller&&this.scroller.finishPullDown()
