@@ -1,14 +1,14 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-const Index = r => require.ensure([], () => r(require('@/components/index')), 'index')
-const Car = r => require.ensure([], () => r(require('@/components/car')), 'car')
-const Search = r => require.ensure([], () => r(require('@/components/search')), 'search')
-const Login = r => require.ensure([], () => r(require('@/components/login')), 'login')
-const Main= r => require.ensure([], () => r(require('@/components/main')), 'main')
-const vipMessage= r => require.ensure([], () => r(require('@/components/vip-message')), 'main')
-const Classify = r => require.ensure([], () => r(require('@/components/classify')), 'classify')
-const FilmDetail = r => require.ensure([], () => r(require('@/components/film-detail')), 'filmdetail')
+const Index = r => require.ensure([], () => r(require('pages/index')), 'index')
+const Car = r => require.ensure([], () => r(require('pages/car')), 'car')
+const Search = r => require.ensure([], () => r(require('pages/search')), 'search')
+const Login = r => require.ensure([], () => r(require('pages/login')), 'login')
+const Main= r => require.ensure([], () => r(require('pages/main')), 'main')
+const vipMessage= r => require.ensure([], () => r(require('pages/vip-message')), 'main')
+const Classify = r => require.ensure([], () => r(require('pages/classify')), 'classify')
+const FilmDetail = r => require.ensure([], () => r(require('pages/film-detail')), 'filmdetail')
 
 
 Vue.use(Router)

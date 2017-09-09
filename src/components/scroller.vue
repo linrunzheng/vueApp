@@ -1,14 +1,18 @@
 <template>
-  <div ref="wrapper" class="list-wrapper">
-    <div class="scroll-content">
-        <slot></slot>
-        <div>
-            <PullingWord v-if="!inPulling" :loadingWord="beforePullUpWord"></PullingWord>
-            <Loading v-show="inPulling" :loadingWord='PullingUpWord'></Loading>
-        </div>
-       
-    </div>  
-  </div>
+    <div ref="wrapper" class="list-wrapper">  
+
+        <div class="scroll-content">       
+            <slot></slot>
+            <div>
+                <PullingWord v-if="!inPullUp" :loadingWord="beforePullUpWord"></PullingWord>
+                <Loading v-show="inPullUp" :loadingWord='PullingUpWord'></Loading>
+            </div>       
+        </div>  
+
+        <transition name="pullDown">
+           <Loading class="pullDown" v-show="inPullDown" :loadingWord='PullingDownWord'></Loading>
+        </transition> 
+    </div>
 </template>
 
 <script >
@@ -17,8 +21,10 @@
   import PullingWord from './pulling-word'
 
   const  PullingUpWord="正在拼命加载中...";
-  const  beforePullUpWord="上拉加载";
+  const  beforePullUpWord="上拉加载更多";
   const  finishPullUpWord="加载完成";
+
+  const  PullingDownWord="正在刷新...";
 
   export default {
     props: {
@@ -46,29 +52,33 @@
     data() {
         return {  
             scroll:null,
-            inPulling:false,
+            inPullUp:false,
+            inPullDown:false,
             beforePullUpWord,
-            PullingUpWord
+            PullingUpWord,
+            PullingDownWord,
+            continuePullUp:true
         }
     },
      
     mounted() {
-        this.initScroll();
+        setTimeout(()=>{
+            this.initScroll();
 
-        this.scroll.on('pullingUp',()=> {
-            this.PullingUpWord=PullingUpWord;
-            this.inPulling=true;
-            this.$emit("onPullUp","上拉加载");
-        });
+            this.scroll.on('pullingUp',()=> {
+                if(this.continuePullUp){
+                    this.beforePullUp();
+                    this.$emit("onPullUp","当前状态：上拉加载");
+                }
+            });
 
-        this.scroll.on('pullingDown',()=> {
-            this.disable();
-            this.$emit("onPullDown","下拉加载更多");
-        });
+            this.scroll.on('pullingDown',()=> {
+                this.beforePullDown();
+                this.$emit("onPullDown","当前状态：下拉加载更多");
+            });
 
-
- 
-
+        },20)
+       
     },
     methods: {
         initScroll() {
@@ -81,6 +91,19 @@
                 pullDownRefresh: this.pullDownRefresh,
                 pullUpLoad: this.pullUpLoad,
             })
+        },
+        beforePullUp(){
+            this.PullingUpWord=PullingUpWord;
+            this.inPullUp=true;
+        }, 
+        beforePullDown(){
+            this.disable();
+            this.inPullDown=true;
+        },
+        finish(type){
+            this["finish"+type]();
+            this.enable();
+            this["in"+type]=false;  
         },
         disable() {
             this.scroll && this.scroll.disable()
@@ -102,9 +125,7 @@
     watch: {
         dataList() {                
             this.$nextTick(()=>{
-                setTimeout(()=>{
-                     this.refresh(); 
-                 },50)              
+                this.refresh();                       
             })  
         }
     },
@@ -164,18 +185,20 @@
   }
 
 
+.pullDown{
+    position: absolute;
+    top:0;
+    left:0;
+}
 
-    .up-enter-active{
+    .pullDown-enter-active{
         transition:all 0.2s;
     }
 
-    .up-enter, .up-leave-active{
-        transform:translateY(100%);
+    .pullDown-enter, .pullDown-leave-active{
+        transform:translateY(-100%);
         transition:all 0.2s;
     }
 
-    #c{
-        height:1rem;
-        line-height: 1rem;
-    }
+ 
 </style>

@@ -27,7 +27,7 @@
 </template>
 
 <script>
-import Scroller from './scroller.vue'
+import Scroller from 'components/scroller.vue'
 import{
 	DEVICE_RATIO,
 	DOWN_CONFIG,
@@ -53,25 +53,22 @@ export default {
   	    Scroller
     },
     mounted(){
-    	this.filmList=[1,2,3,4,5]	
+        this.filmList=[1,2,3,4,1,1,1,1,1,1];                     	
     },
     methods:{
-    	pullUpHandle(val){
+    	pullUpHandle(val){          
             setTimeout(()=>{ 
                 this.scrollElement.PullingUpWord="加载完成"
             },2000)
-    		setTimeout(()=>{  			
-    			this.filmList.push(1);   			
-    			this.scrollElement.finishPullUp();
-    			this.scrollElement.refresh();
-    			this.scrollElement.inPulling=false;   		
+    		setTimeout(()=>{  			 			
+    			this.scrollElement.finish("PullUp");
+                 this.filmList.push(1);
     		},3000)   		
     	},
-    	pullDownHandle(val){
+    	pullDownHandle(val){         
     		setTimeout(()=>{
-    			this.scrollElement.finishPullDown();
-    			this.scrollElement.refresh();
-    			this.scrollElement.enable();
+    			this.scrollElement.finish("PullDown");
+                this.filmList.unshift(1);
     		},2000)   		
     	}
     }

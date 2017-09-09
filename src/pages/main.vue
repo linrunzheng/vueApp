@@ -9,7 +9,7 @@
 
 <script>
 
-import footNav from '../components/foot-nav.vue'
+import footNav from 'components/foot-nav.vue'
 
 export default {
    components:{

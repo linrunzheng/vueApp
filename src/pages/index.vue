@@ -24,7 +24,7 @@
 </template>
 
 <script>
-import swiperComponent from './swiper.vue'
+import swiperComponent from 'components/swiper.vue'
 import filmComponent from './film.vue'
 export default {
     data() {

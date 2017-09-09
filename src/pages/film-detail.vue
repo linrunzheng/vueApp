@@ -40,7 +40,7 @@
 
 <script>
 import {api} from "../base/js/api.js"
-import Loading from './loading.vue'
+import Loading from 'components/loading.vue'
 export default {
     name: 'detail',
     data () {

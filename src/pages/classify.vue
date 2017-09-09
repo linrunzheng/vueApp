@@ -34,7 +34,7 @@
 import BScroll from 'better-scroll'
 import {getStyle,getDeviceRatio} from '../base/js/util.js'
 import {api} from "../base/js/api.js"
-import Loading from './loading.vue'
+import Loading from 'components/loading.vue'
 
 /*获取当前缩放比*/
 const DEVICE_RATIO=getDeviceRatio();
