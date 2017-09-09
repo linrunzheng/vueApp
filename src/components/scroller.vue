@@ -1,10 +1,9 @@
 <template>
     <div ref="wrapper" class="list-wrapper">  
-
         <div class="scroll-content">       
             <slot></slot>
             <div>
-                <PullingWord v-if="!inPullUp" :loadingWord="beforePullUpWord"></PullingWord>
+                <PullingWord v-show="!inPullUp&&dataList.length>0" :loadingWord="beforePullUpWord"></PullingWord>
                 <Loading v-show="inPullUp" :loadingWord='PullingUpWord'></Loading>
             </div>       
         </div>  
@@ -24,7 +23,7 @@
   const  beforePullUpWord="上拉加载更多";
   const  finishPullUpWord="加载完成";
 
-  const  PullingDownWord="正在刷新...";
+  const  PullingDownWord="加载中...";
 
   export default {
     props: {
