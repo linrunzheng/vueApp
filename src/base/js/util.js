@@ -6,6 +6,7 @@ export function getDeviceRatio(){
 	var isAndroid = window.navigator.appVersion.match(/android/gi);
     var isIPhone = window.navigator.appVersion.match(/iphone/gi);
     var devicePixelRatio = window.devicePixelRatio;
+    var dpr;
     if (isIPhone) {
         // iOS下，对于2和3的屏，用2倍的方案，其余的用1倍方案
         if (devicePixelRatio >= 3) {                

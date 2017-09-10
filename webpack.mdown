@@ -1,0 +1,375 @@
+上拉加载以及下拉刷新都是移动端很常见的功能，在搜索或者一些分类列表页面常常会用到。跟横向滚动一样，我们还是采用better-scroll这个库来实现。由于better已经更新了新的版本，之前是0.几的版本，更新了一下发现，现在已经是1.2.6这个版本了，新版本多了一个比较好用的api，所以我也重写了之前的代码，用新的api来实现上拉加载以及下拉刷新。
+
+首先把列表基本的样式写好，这里就略过了，然后引入better-scroll库
+import BScroll from 'better-scroll'
+
+其次，在mounted生命周期实例化scroll,可以获取完数据后再new，也可以先new后，获取完数据调用refresh()。实例时需要传入一个配置参数，由于参数比较多，具体的请参考文档，这里只讲2个重点的：
+
+
+//是否开启下拉刷新，可传入true或者false,如果需要更多配置可以传入一个对象
+/**
+ * 
+ * @param threshold 触发事件的阀值，即滑动多少距离触发
+ * @param stop 下拉刷新后回滚距离顶部的距离（为了给loading留出一点空间）
+ */
+
+pullDownRefresh：{
+    threshold:80,
+    stop:40
+}
+
+//是否开启上拉加载，同上，上拉无stop参数，这里需要注意是负数
+pullUpLoad：{
+    threshold:-80,
+}
+
+以上的数字个人感觉比较合适，但是这里有一个问题，由于我采用的是淘宝flexible.js来适配，这就导致：在安卓下80这个距离是合适的，但是到了iphone6s下，由于被缩放了3陪，所以现在80在iphone6s下就是27左右了，所以对于不同缩放程度的屏幕，还需要乘以对应的缩放比。
+
+
+淘宝flexible.js里面其实已经有这个获取屏幕缩放比方法，这里直接从里面拿：
+
+export function getDeviceRatio(){
+    var isAndroid = window.navigator.appVersion.match(/android/gi);
+    var isIPhone = window.navigator.appVersion.match(/iphone/gi);
+    var devicePixelRatio = window.devicePixelRatio;
+    var dpr;
+    if (isIPhone) {
+        // iOS下，对于2和3的屏，用2倍的方案，其余的用1倍方案
+        if (devicePixelRatio >= 3) {                
+            dpr = 3;
+        } else if (devicePixelRatio >= 2){
+            dpr = 2;
+        } else {
+            dpr = 1;
+        }
+    } else {
+        // 其他设备下，仍旧使用1倍的方案
+        dpr = 1;
+    }
+    return dpr
+}
+
+/*获取当前缩放比*/
+const DEVICE_RATIO=getDeviceRatio();
+
+
+ /*下拉配置*/
+const DOWN_CONFIG={
+  threshold:80*DEVICE_RATIO,
+  stop:40*DEVICE_RATIO
+}
+/*上拉配置*/
+const UP_CONFIG={
+  threshold:-80*DEVICE_RATIO,
+}
+
+this.scroller = new BScroll(scrollWrap,{
+  click:true,
+  probeType:3,
+  pullDownRefresh:DOWN_CONFIG,
+  pullUpLoad:UP_CONFIG
+});
+
+实例化后，接下来就是监听上拉和下拉事件了。betterScroll新增了一些事件，主要的有：
+
+/*下拉刷新*/
+this.scroller.on('pullingDown',()=> {});
+
+/*上拉加载更多*/
+this.scroller.on('pullingUp',()=>{});
+
+触发上拉或者下拉事件后，需要我们调用this.scroller.finishPullDown()或者this.scroller.finishPullUp()来通知better-scroll事件完成。
+
+this.scroller.on('pullingDown',()=> {
+   <!-- 1. 发送请求获取数据 -->
+   <!-- 2. 获取成功后，通知事件完成 -->
+   <!-- 3. 修改循环的数据，在nextTick调用refresh -->
+});
+
+通常操作完成后都需要我们手动触发refresh方法来重新计算可滚动的距离，因此可以写一个watch监听数据的变化，这样我们只需要改变数据，不用每次操作数据后都调用refresh方法。
+
+
+watch:{
+      dataList(){
+        this.$nextTick(()=>{
+          this.scroller.refresh(); 
+        })  
+      }
+   },
+
+
+
+如果你使用的版本还是旧的，那可以在on( scroll )事件的时候进行判断来实现功能
+
+this.scroller.on("scroll",(pos)=>{ 
+   //获取整个滚动列表的高度
+   var height=getStyle(scroller,"height");
+
+   //获取滚动外层wrap的高度
+   var pageHeight=getStyle(scrollWrap,"height");
+
+   //触发事件需要的阀值
+   var distance=80*DEVICE_RATIO;
+
+   //参数pos为当前位置
+
+   if(pos.y>distance){ 
+     if(this.pullUpflag){
+        //console.log("下拉");
+        //do something
+     }     
+     
+   }else if(pos.y-pageHeight<-height-distance){
+        //console.log("上拉");
+        //do something
+   }
+
+   为了防止多次触发，需要加2个开关类的东西;
+   var onPullUp=true;
+   var onPullDown=true;
+
+   每次触发事件时，將对应的开关设置为false,等操作完成后，再重新设置为true,否则多次下拉或者上拉就会触发多次事件。通过设置开关可以保证每次只有一个事件在进行。
+
+
+
+  最后，来封装成一个组件
+
+  <template>
+    <div ref="wrapper" class="list-wrapper">  
+        <div class="scroll-content">       
+            <slot></slot>         
+        </div>      
+    </div>
+</template>
+
+由于每个页面需要滚动的具体内容都是不一样的，所以用了一个插槽来分发。
+
+
+组件需要的参数由父级传入，通过prop来接收并设置默认值
+
+ export default {
+    props: {
+      dataList:{
+        type: Array,
+        default: []
+      },
+      probeType: {
+        type: Number,
+        default: 3
+      },
+      click: {
+        type: Boolean,
+        default: true
+      },   
+      pullDownRefresh: {
+        type: null,
+        default: false
+      },
+      pullUpLoad: {
+        type: null,
+        default: false
+      },    
+    }
+
+
+组件挂载后，在事件触发时并不直接处理事件，而是向父级发送一个事件，父级通过在模板v-on接收事件并处理后续的逻辑
+
+    mounted() {
+        this.scroll = new BScroll(this.$refs.wrapper, {
+                probeType: this.probeType,
+                click: this.click,       
+                pullDownRefresh: this.pullDownRefresh,
+                pullUpLoad: this.pullUpLoad,
+            })
+
+        this.scroll.on('pullingUp',()=> {
+            if(this.continuePullUp){
+                this.beforePullUp();
+                this.$emit("onPullUp","当前状态：上拉加载");
+            }
+        });
+
+        this.scroll.on('pullingDown',()=> {
+            this.beforePullDown();
+            this.$emit("onPullDown","当前状态：下拉加载更多");
+        });
+     
+    }
+
+
+父组件在使用时，需要传入配置参数Props以及处理子组件发射的事件，并且用具体的内容并替换掉 slot 标签
+    <Scroller 
+        id="scroll"
+        ref="scroll" 
+        :dataList="filmList"
+        :pullDownRefresh="DOWN_CONFIG"
+        :pullUpLoad="UP_CONFIG"
+        @onPullUp="pullUpHandle"
+        @onPullDown="pullDownHandle"
+      >
+
+        <ul>
+             <router-link class="film-list" v-for="(v,i) in filmList" :key="v.id" tag="li" :to='{path:"/film-detail/"+v.id}'>
+                    <div class="film-list__img">
+                         <img v-lazy="v.images.small" alt="" />                
+                    </div>
+                    <div class="film-list__detail">
+                        <p class="film-list__detail__title">{{v.title}}</p>
+                        <p class="film-list__detail__director">导演：{{filterDirectors(v.directors)}}</p>
+                        <p class="film-list__detail__year">年份：{{v.year}}<span>{{v.stock}}</span></p>
+                        <p class="film-list__detail__type">类别：{{v.genres.join(" / ")}}<span></span></p>
+                        <p class="film-list__detail__rank">评分：<span>{{v.rating.average}}分</span></p>
+                    </div>                          
+                </router-link>
+          </ul>         
+      </Scroller>
+
+
+
+
+完整的scroller组件内容如下
+
+      <template>
+          <div ref="wrapper" class="list-wrapper">  
+              <div class="scroll-content">       
+                  <slot></slot>
+                  <div>
+                      <PullingWord v-show="!inPullUp&&dataList.length>0" :loadingWord="beforePullUpWord"></PullingWord>
+                      <Loading v-show="inPullUp" :loadingWord='PullingUpWord'></Loading>
+                  </div>       
+              </div>  
+
+              <transition name="pullDown">
+                 <Loading class="pullDown" v-show="inPullDown" :loadingWord='PullingDownWord'></Loading>
+              </transition> 
+          </div>
+      </template>
+
+
+      <script >
+        import BScroll from 'better-scroll'
+        import Loading from './loading.vue'
+        import PullingWord from './pulling-word'
+
+        const  PullingUpWord="正在拼命加载中...";
+        const  beforePullUpWord="上拉加载更多";
+        const  finishPullUpWord="加载完成";
+
+        const  PullingDownWord="加载中...";
+
+        export default {
+          props: {
+            dataList:{
+              type: Array,
+              default: []
+            },
+            probeType: {
+              type: Number,
+              default: 3
+            },
+            click: {
+              type: Boolean,
+              default: true
+            },   
+            pullDownRefresh: {
+              type: null,
+              default: false
+            },
+            pullUpLoad: {
+              type: null,
+              default: false
+            },    
+          },
+          data() {
+              return {  
+                  scroll:null,
+                  inPullUp:false,
+                  inPullDown:false,
+                  beforePullUpWord,
+                  PullingUpWord,
+                  PullingDownWord,
+                  continuePullUp:true
+              }
+          },
+           
+          mounted() {
+              setTimeout(()=>{
+                  this.initScroll();
+
+                  this.scroll.on('pullingUp',()=> {
+                      if(this.continuePullUp){
+                          this.beforePullUp();
+                          this.$emit("onPullUp","当前状态：上拉加载");
+                      }
+                  });
+
+                  this.scroll.on('pullingDown',()=> {
+                      this.beforePullDown();
+                      this.$emit("onPullDown","当前状态：下拉加载更多");
+                  });
+
+              },20)
+             
+          },
+          methods: {
+              initScroll() {
+                  if (!this.$refs.wrapper) {
+                      return
+                  }
+                  this.scroll = new BScroll(this.$refs.wrapper, {
+                      probeType: this.probeType,
+                      click: this.click,       
+                      pullDownRefresh: this.pullDownRefresh,
+                      pullUpLoad: this.pullUpLoad,
+                  })
+              },
+              beforePullUp(){
+                  this.PullingUpWord=PullingUpWord;
+                  this.inPullUp=true;
+              }, 
+              beforePullDown(){
+                  this.disable();
+                  this.inPullDown=true;
+              },
+              finish(type){
+                  this["finish"+type]();
+                  this.enable();
+                  this["in"+type]=false;  
+              },
+              disable() {
+                  this.scroll && this.scroll.disable()
+              },
+              enable() {
+                  this.scroll && this.scroll.enable()
+              },
+              refresh() {
+                  this.scroll && this.scroll.refresh()
+              }, 
+              finishPullDown(){
+                  this.scroll&&this.scroll.finishPullDown()
+              },
+              finishPullUp(){
+                  this.scroll&&this.scroll.finishPullUp()
+              },      
+          },
+               
+          watch: {
+              dataList() {                
+                  this.$nextTick(()=>{
+                      this.refresh();                       
+                  })  
+              }
+          },
+          components: {
+              Loading,
+              PullingWord
+          }
+        }
+
+      </script>
+
+    
+  
+  
+     
+  
