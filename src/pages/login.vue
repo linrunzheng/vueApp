@@ -32,6 +32,18 @@ export default {
    		goBack(){
    			this.$router.back();
    		}
+   },
+   mounted(){
+   		localStorage.setItem("token",new Date().getTime());
+   		setTimeout(()=>{
+   			this.$router.replace("/car")
+   		},3000)
+   		
+   },
+   computed:{
+   		backPath(){
+   			return this.$route.query.redirect
+   		}
    }
 }
 </script>

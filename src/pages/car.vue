@@ -84,7 +84,21 @@ export default {
         }
     },
     mounted(){
-      
+      this.$ajax.get("/ceshi").then(function(res){
+           console.log(res)
+      })
+    },
+
+    beforeRouteEnter(to,from,next){
+        if(!localStorage.getItem("token")){
+            next({
+                path: '/login',
+                query: { redirect: to.fullPath }
+            })
+        }else{
+            next();
+        }
+       
     }
 };
 </script>

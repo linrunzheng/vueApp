@@ -8,7 +8,7 @@ if (!process.env.NODE_ENV) {
 var opn = require('opn')
 var path = require('path')
 var express = require('express')
-var router=express.Router()
+var app = express()
 var webpack = require('webpack')
 var proxyMiddleware = require('http-proxy-middleware')
 var webpackConfig = require('./webpack.dev.conf')
@@ -21,11 +21,11 @@ var autoOpenBrowser = !!config.dev.autoOpenBrowser
 // https://github.com/chimurai/http-proxy-middleware
 var proxyTable = config.dev.proxyTable
 
-router.get("/goods",function(req,res){
-  res.json({code:"s"});
+app.get("/ceshi",function(req,res){
+    res.send({"code":"s"})
 })
-var app = express()
-app.use("/api",router)
+
+
 
 var compiler = webpack(webpackConfig)
 
