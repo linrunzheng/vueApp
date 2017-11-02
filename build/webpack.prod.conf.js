@@ -8,6 +8,7 @@ var CopyWebpackPlugin = require('copy-webpack-plugin')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 var ExtractTextPlugin = require('extract-text-webpack-plugin')
 var OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
+var AutoDllPlugin = require('autodll-webpack-plugin');
 
 var env = config.build.env
 
@@ -83,6 +84,18 @@ var webpackConfig = merge(baseWebpackConfig, {
       name: 'manifest',
       chunks: ['vendor']
     }),
+/*     new AutoDllPlugin({
+      inject: true, // will inject the DLL bundle to index.html
+      debug: true,
+      filename: '[name]_[hash].js',
+      path: './dll',
+      entry: {
+        vendor: [
+          'vue','vuex','vue-router','axios','vue-lazyload','vue-touch','better-scroll'
+        ]
+      }
+    }) ,*/
+
     // copy custom static assets
     new CopyWebpackPlugin([
       {
