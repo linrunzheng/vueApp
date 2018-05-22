@@ -44,7 +44,7 @@ export default {
     	this.scroller=this.initScroll(el);
         const {request}=el.dataset;
 
-        this.$ajax.get(`${api}${request}?start=${Math.floor(Math.random()*10)}`)
+        this.$ajax.get(`/${request}?start=${Math.floor(Math.random()*10)}`)
 	        .then((res)=>{
 	            this.array=res.data.subjects;
 	            this.$nextTick(()=>{

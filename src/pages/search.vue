@@ -113,7 +113,7 @@ export default {
             return name                         
         },
         fetchData(callback){
-            this.$ajax.get(`${api}search?q=${this.searchText}&count=10&start=${10*this.page}`)
+            this.$ajax.get(`/search?q=${this.searchText}&count=10&start=${10*this.page}`)
             .then((res)=>{
                 res=res.data;
                 if(res.subjects.length>0){

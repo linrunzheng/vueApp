@@ -126,7 +126,7 @@ export default {
 	    },
 	    getData(){	    	
 	    	this.showLoading=true;
-	    	this.$ajax.get(`${api}${this.type}?count=10&start=0`)
+	    	this.$ajax.get(`/${this.type}?count=10&start=0`)
 	   	    	.then((res)=>{ 	  
 	   	    		res=res.data;
 	   	    		if(res.subjects.length>0){
@@ -145,7 +145,7 @@ export default {
 	    pullDown(){   	    	
 	    	this.beforeFetch("Down");  
 	    	setTimeout(()=>{
-		    	this.$ajax.get(`${api}${this.type}?count=10&start=${Math.floor(Math.random()*100)}`)
+		    	this.$ajax.get(`/${this.type}?count=10&start=${Math.floor(Math.random()*100)}`)
 			    	.then((res)=>{
 				    	res=res.data;
 				    	if(res.subjects.length>0){
@@ -166,7 +166,7 @@ export default {
 	    	if(!this.noMoreData){
 		    	this.beforeFetch("Up");
 		    	setTimeout(()=>{
-			    	this.$ajax.get(`${api}${this.type}?count=10&start=${(++this.currentPage)*10}`)
+			    	this.$ajax.get(`/${this.type}?count=10&start=${(++this.currentPage)*10}`)
 				    	.then((res)=>{ 	  
 			   	    		res=res.data;
 			   	    		if(res.subjects.length>0){

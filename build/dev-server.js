@@ -21,7 +21,7 @@ var autoOpenBrowser = !!config.dev.autoOpenBrowser
 // https://github.com/chimurai/http-proxy-middleware
 var proxyTable = config.dev.proxyTable
 
-app.get("/ceshi",function(req,res){
+app.post("/login",function(req,res){
     res.send({"code":"s"})
 })
 

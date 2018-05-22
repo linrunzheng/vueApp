@@ -83,22 +83,16 @@ export default {
             return this.$store.state.goodsList
         }
     },
-    mounted(){
-      this.$ajax.get("/ceshi").then(function(res){
-           console.log(res)
-      })
-    },
-
+    mounted(){},
     beforeRouteEnter(to,from,next){
-        if(!localStorage.getItem("token")){
+        if(!sessionStorage.getItem("token")){
             next({
                 path: '/login',
                 query: { redirect: to.fullPath }
             })
         }else{
             next();
-        }
-       
+        }       
     }
 };
 </script>

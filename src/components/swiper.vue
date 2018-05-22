@@ -23,7 +23,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 @import '../base/css/base.scss';
 	.swiper-box {
 	    width: 100%;
