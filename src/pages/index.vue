@@ -42,12 +42,12 @@ export default {
                 commingFilmData:{
                     scroller:"scroll-comming",
                     url:"coming_soon",
-                    type:"即将上映"
+                    type:"coming soon"
                 },
                 theatersFilmData:{
                     scroller:"scroll-theaters",
                     url:"in_theaters",
-                    type:"正在热播"
+                    type:"Hot Hits"
                 }
             }
             
